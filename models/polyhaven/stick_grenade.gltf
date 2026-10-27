@@ -1,0 +1,159 @@
+{
+  "asset": {
+    "generator": "Khronos glTF Blender I/O v5.1.20",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "stick_grenade"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "stick_grenade",
+      "normalTexture": {
+        "index": 0
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 1
+        },
+        "metallicRoughnessTexture": {
+          "index": 2
+        }
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "HandGrenade_M1917_LOD0",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    }
+  ],
+  "images": [
+    {
+      "mimeType": "image/jpeg",
+      "name": "stick_grenade_nor_gl",
+      "uri": "textures/stick_grenade_nor_gl_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "stick_grenade_diff",
+      "uri": "textures/stick_grenade_diff_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "stick_grenade_metal-stick_grenade_rough",
+      "uri": "textures/stick_grenade_arm_1k.jpg"
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 2935,
+      "max": [
+        0.0387132503092289,
+        0.218969464302063,
+        0.03869793191552162
+      ],
+      "min": [
+        -0.04264283925294876,
+        -0.16046538949012756,
+        -0.042657941579818726
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 2935,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 2935,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 13836,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 35220,
+      "byteOffset": 0,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 35220,
+      "byteOffset": 35220,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 23480,
+      "byteOffset": 70440,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 27672,
+      "byteOffset": 93920,
+      "target": 34963
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 121592,
+      "uri": "stick_grenade.bin"
+    }
+  ]
+}

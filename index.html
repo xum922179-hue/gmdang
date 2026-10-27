@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <title>NEON STRIKE // 霓虹突袭</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+  /* 字体已本地化(离线可用), 原谷歌字体引用已注释: */
+  /* @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap'); */
 
   :root{
     --neon-cyan:#00f0ff;
@@ -112,6 +113,98 @@
 
   #damageVignette{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 200px 40px rgba(255,0,40,0.6);opacity:0;transition:opacity 0.3s;}
   #damageVignette.flash{opacity:1;transition:opacity 0.05s;}
+
+  /* ===== SCOPE OVERLAY (sniper RMB ADS) ===== */
+  #scopeOverlay{
+    position:absolute;inset:0;pointer-events:none;
+    opacity:0;
+    background:radial-gradient(circle at center, transparent 0 26%, rgba(0,0,0,0.98) 30%);
+  }
+  #scopeOverlay .lens{
+    position:absolute;top:50%;left:50%;width:52vmin;height:52vmin;
+    transform:translate(-50%,-50%);
+    border:1px solid rgba(0,240,255,0.55);border-radius:50%;
+    box-shadow:0 0 28px rgba(0,240,255,0.25), inset 0 0 40px rgba(0,0,0,0.85);
+  }
+  #scopeOverlay .cl{position:absolute;top:50%;left:50%;background:rgba(0,240,255,0.55);box-shadow:0 0 4px rgba(0,240,255,0.6);}
+  #scopeOverlay .cl.h{width:52vmin;height:1px;transform:translate(-50%,-50%);}
+  #scopeOverlay .cl.v{width:1px;height:52vmin;transform:translate(-50%,-50%);}
+  #scopeOverlay .cdot{
+    position:absolute;top:50%;left:50%;width:3px;height:3px;border-radius:50%;
+    background:var(--neon-magenta);transform:translate(-50%,-50%);
+    box-shadow:0 0 6px var(--neon-magenta);
+  }
+  #scopeOverlay .st{position:absolute;background:rgba(0,240,255,0.45);}
+  #scopeLabel{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,26vmin);
+    font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:5px;
+    color:var(--neon-cyan);text-shadow:0 0 8px var(--neon-cyan);white-space:nowrap;
+  }
+
+  /* ===== IRON SIGHT OVERLAY (rifle ADS): vignette + centre aim dot ===== */
+  #ironOverlay{
+    position:absolute;inset:0;pointer-events:none;opacity:0;
+    background:radial-gradient(ellipse at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 58%, rgba(0,8,18,0.55) 100%);
+  }
+  #ironOverlay::after{
+    content:'';position:absolute;top:50%;left:50%;width:2px;height:2px;border-radius:50%;
+    background:rgba(0,240,255,0.95);transform:translate(-50%,-50%);
+    box-shadow:0 0 6px rgba(0,240,255,0.9);
+  }
+
+  /* ===== KILL FEEDBACK (center pop — 按武器变色) ===== */
+  #killFeedback{
+    position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);
+    font-family:'Orbitron',sans-serif;font-weight:900;font-size:38px;letter-spacing:6px;
+    opacity:0;pointer-events:none;white-space:nowrap;
+  }
+  #killFeedback.show{animation:kfpop 0.9s ease-out forwards;}
+  @keyframes kfpop{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(0.4);}
+    15%{opacity:1;transform:translate(-50%,-50%) scale(1.15);}
+    30%{transform:translate(-50%,-50%) scale(1);}
+    100%{opacity:0;transform:translate(-50%,-64%) scale(1);}
+  }
+  #killFeedback .kf-line1{display:block;line-height:1;text-shadow:0 0 20px currentColor;}
+  #killFeedback .kf-line2{display:block;font-size:0.45em;margin-top:8px;letter-spacing:2px;text-shadow:0 0 10px currentColor;}
+  /* HEADSHOT — 金色 + 骷髅 */
+  #killFeedback.kf-headshot .kf-line1{color:#fff200;text-shadow:0 0 22px #fff200,0 0 6px #000;}
+  /* KNIFE — 血红色 */
+  #killFeedback.kf-knife .kf-line1{color:#ff3a3a;text-shadow:0 0 22px #ff3a3a,0 0 6px #000;}
+  /* GRENADE/ROCKET — 爆炸橘 */
+  #killFeedback.kf-explode .kf-line1{color:#ff6a3a;text-shadow:0 0 22px #ff6a3a,0 0 6px #000;}
+  /* 普通 KILL — 青色 */
+  #killFeedback.kf-kill .kf-line1{color:#00f0ff;text-shadow:0 0 22px #00f0ff,0 0 6px #000;}
+
+  /* ===== WEAPON SLOTS (1/2) ===== */
+  #weaponPanel{
+    position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+    display:flex;gap:10px;font-family:'Orbitron',sans-serif;
+  }
+  .wslot{
+    padding:6px 14px;border:1px solid rgba(0,240,255,0.35);
+    color:#7fa8c8;background:rgba(5,10,20,0.6);
+    letter-spacing:2px;font-size:12px;border-radius:2px;
+  }
+  .wslot .wk{color:var(--neon-yellow);margin-right:6px;}
+  .wslot.active{
+    border-color:var(--neon-yellow);color:var(--neon-yellow);
+    box-shadow:0 0 14px rgba(255,242,0,0.35);background:rgba(30,28,5,0.6);
+  }
+
+  /* ===== GRENADE HUD (G) ===== */
+  #grenadePanel{
+    position:absolute;bottom:92px;right:60px;text-align:right;
+    font-family:'Orbitron',sans-serif;letter-spacing:3px;
+    color:#ffb060;text-shadow:0 0 10px rgba(255,140,60,0.7);
+  }
+  #grenadePanel .gk{
+    display:inline-block;min-width:18px;padding:1px 5px;margin-right:6px;
+    border:1px solid #ffb060;color:#ffd9a0;font-size:11px;text-align:center;
+  }
+  #grenadePanel #grenadeValue{font-size:24px;color:#fff;text-shadow:0 0 12px #ff8a3a;}
+  #grenadePanel.empty{color:#5a6a7a;text-shadow:none;}
+  #grenadePanel.empty #grenadeValue{color:#5a6a7a;text-shadow:none;}
 
   #waveBanner{position:absolute;top:22%;left:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;text-align:center;opacity:0;transition:opacity 0.4s;}
   #waveBanner.show{opacity:1;}
@@ -246,6 +339,21 @@
   }
   #pauseHint.show{display:block;}
 
+  #resumeOverlay{
+    position:fixed;inset:0;z-index:40;display:none;
+    flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(0,10,20,0.5);cursor:pointer;
+  }
+  #resumeOverlay.show{display:flex;}
+  #resumeOverlay .resume-title{
+    font-family:'Orbitron';font-size:42px;letter-spacing:12px;
+    color:var(--neon-cyan);text-shadow:0 0 22px var(--neon-cyan);
+  }
+  #resumeOverlay .resume-sub{
+    margin-top:16px;font-family:'Share Tech Mono';font-size:15px;
+    color:#9fd8ff;letter-spacing:4px;animation:blink 1.2s steps(2) infinite;
+  }
+
   .controls-grid{display:grid;grid-template-columns:auto auto;gap:8px 24px;margin-top:32px;font-family:'Share Tech Mono';font-size:13px;color:#9fd8ff;justify-content:center;}
   .controls-grid .k{display:inline-block;min-width:50px;padding:2px 8px;background:rgba(0,240,255,0.12);border:1px solid var(--neon-cyan);color:#fff;text-align:center;box-shadow:0 0 8px rgba(0,240,255,0.4);border-radius:2px;letter-spacing:1px;}
 
@@ -341,18 +449,25 @@
   <div class="inner">
     <div class="title">NEON STRIKE</div>
     <div class="subtitle">// 霓虹突袭 <span class="mag">v2.0</span> //</div>
-    <button id="startBtn" class="start-btn">ENGAGE</button>
+    <div style="display:flex;gap:18px;justify-content:center;margin-bottom:22px;">
+      <button id="startSingleBtn" class="start-btn">单人 · SINGLE</button>
+      <button id="startMultiBtn" class="start-btn" style="background:linear-gradient(90deg,var(--neon-magenta),var(--neon-yellow));color:#000;">多人 · MULTIPLAYER</button>
+    </div>
     <button id="settingsBtn">SETTINGS / 设置</button>
     <div class="controls-grid">
       <div><span class="k">W A S D</span></div><div>移动 / Move</div>
       <div><span class="k">MOUSE</span></div><div>瞄准 / Aim</div>
       <div><span class="k">LMB</span></div><div>全自动射击 / Auto-fire</div>
       <div><span class="k">R</span></div><div>换弹 / Reload</div>
-      <div><span class="k">SHIFT</span></div><div>冲刺 / Sprint (FOV 拉伸)</div>
+      <div><span class="k">SHIFT</span></div><div>切换奔跑 / Toggle Sprint (FOV 拉伸)</div>
+      <div><span class="k">CTRL</span></div><div>滑铲 / Slide (奔跑时)</div>
       <div><span class="k">SPACE</span></div><div>跳跃 / Jump (跳上建筑)</div>
+      <div><span class="k">1 / 2</span></div><div>切换 步枪 / 狙击枪 / Switch weapon</div>
+      <div><span class="k">RMB</span></div><div>狙击开镜 / Scope (按住)</div>
+      <div><span class="k" style="background:rgba(255,140,60,0.12);border-color:#ffb060;color:#ffb060;">G</span></div><div>投掷手雷 / Throw grenade</div>
       <div><span class="k" style="background:rgba(255,242,0,0.12);border-color:var(--neon-yellow);color:var(--neon-yellow);">HEAD</span></div><div>爆头秒杀 + 连击得分</div>
     </div>
-    <div class="hint">CLICK ENGAGE TO LOCK POINTER · 点击 ENGAGE 锁定鼠标</div>
+    <div class="hint">CLICK SINGLE TO START · 点击 SINGLE 开始</div>
   </div>
 </div>
 
@@ -394,9 +509,16 @@
   </div>
 
   <div id="ammoPanel">
-    <div class="label">AMMO</div>
+    <div class="label" id="weaponNameLabel">RIFLE</div>
     <div class="value"><span id="ammoValue">30</span><span class="max">/30</span></div>
     <div id="reloadHint">PRESS R TO RELOAD</div>
+  </div>
+
+  <div id="grenadePanel"><span class="gk">G</span>FRAG <span id="grenadeValue">3</span></div>
+
+  <div id="weaponPanel">
+    <div class="wslot active" id="slotRifle"><span class="wk">1</span>RIFLE</div>
+    <div class="wslot" id="slotSniper"><span class="wk">2</span>SNIPER</div>
   </div>
 
   <div id="healthWrap">
@@ -410,6 +532,15 @@
   <div id="crosshair"><div class="seg t"></div><div class="seg b"></div><div class="seg l"></div><div class="seg r"></div><div class="dot"></div></div>
   <div id="hitMarker"></div>
   <div id="damageVignette"></div>
+  <div id="scopeOverlay">
+    <div class="lens"></div>
+    <div class="cl h"></div>
+    <div class="cl v"></div>
+    <div class="cdot"></div>
+    <div id="scopeLabel">SNIPER · 12.7x55 · LMB FIRE</div>
+  </div>
+  <div id="ironOverlay"></div>
+  <div id="killFeedback"><span class="kf-line1"></span><span class="kf-line2"></span></div>
   <div id="waveBanner"><div class="wave">SURVIVE</div><div class="sub">THE LONGEST HOUR</div></div>
   <div class="hint">ESC to release pointer · 按 P 打开设置</div>
   <div id="pauseHint">PAUSED · 按 P 继续</div>
@@ -417,6 +548,16 @@
 
 <!-- Brightness overlay (controlled by settings) -->
 <div id="brightnessOverlay" style="position:fixed;inset:0;z-index:30;pointer-events:none;background:#000;opacity:0;"></div>
+
+<!-- Pause overlay: ESC releases pointer -> show menu (no browser refresh needed) -->
+<div id="resumeOverlay">
+  <div class="resume-title">PAUSED</div>
+  <div class="resume-sub">点击继续战斗 · CLICK TO RESUME</div>
+  <div style="margin-top:22px;display:flex;gap:14px;justify-content:center;pointer-events:auto;">
+    <button id="resumeBtn" class="start-btn" style="font-size:14px;padding:12px 28px;">继续 · RESUME</button>
+    <button id="backToMainBtn" class="start-btn" style="font-size:14px;padding:12px 28px;background:linear-gradient(90deg,var(--neon-magenta),#ff3a3a);">返回主菜单 · MAIN MENU</button>
+  </div>
+</div>
 
 <!-- Settings Overlay -->
 <div id="settingsOverlay">
@@ -459,6 +600,12 @@
       <span class="val" id="recoilVal">100</span>
     </div>
 
+    <div class="setting-row">
+      <label>渲染分辨率 / RES</label>
+      <input type="range" id="rsSlider" min="0" max="150" step="10" value="0">
+      <span class="val" id="rsVal">AUTO</span>
+    </div>
+
     <div class="btn-row">
       <button id="resetSettings">RESET</button>
       <button id="closeSettings">CLOSE</button>
@@ -466,11 +613,12 @@
   </div>
 </div>
 
+<script src="models_b64.js"></script>
 <script type="importmap">
 {
   "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    "three": "/node_modules/three/build/three.module.js",
+    "three/addons/": "/node_modules/three/examples/jsm/"
   }
 }
 </script>
@@ -478,6 +626,186 @@
 <script type="module">
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { lightViewModels } from './weapon_presentation.js';
+
+// Cached weapon models (loaded once, cloned per use)
+// Supports both .glb (binary, single file) and .gltf (JSON + .bin + textures).
+const weaponModels = {};
+const gltfLoader = new GLTFLoader();
+
+// External model URLs (optional). If set and loads OK, replaces local procedural model.
+// Leave empty '' to use local models/ default.
+// Supports: .glb (self-contained binary) and .gltf (JSON + bin + textures, paths resolved relative to URL)
+// Examples:
+//   Poly Haven Service Pistol (CC0, CORS OK, glTF):
+//     'https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/service_pistol/service_pistol_1k.gltf'
+//   Custom GLB (CORS must be enabled):
+//     'https://cdn.jsdelivr.net/gh/<user>/<repo>@<branch>/<path>/rifle.glb'
+const EXTERNAL_MODELS = {
+  rifle:  '',  // local procedural rifle (ensures all players see same model)
+  sniper: '',  // local procedural sniper
+  grenade:'',  // local procedural grenade
+};
+const MODEL_VERSION = 14;       // bump to invalidate browser cache of local GLBs
+const EXTERNAL_TIMEOUT = 8000; // ms — give up on slow external hosts quickly
+
+// Normalize a THREE.Scene: drop duplicate / spare parts, then disable
+// shadows and boost emissive for neon style.
+//
+// Poly Haven "service_pistol" ships as a TWO-state kit in one glTF:
+//   • an "_a" set at Y=0        — pistol/slide/magazine_loaded/bullet/hammer/trigger
+//   • a  "_b" set at Y=+0.15    — the same pistol in a released/empty state
+//   • plus "magazine_empty"     — a spare magazine floating off to the side
+// When loaded as a single view-model, all parts render, so the player sees
+// two stacked pistols and a floating magazine, and the bounding box is
+// inflated (longest axis becomes Y instead of X) which mis-rotates the
+// model. We strip the _b set and the spare magazine before any bbox work.
+// Local procedural GLBs use node names "rifle"/"sniper"/"grenade" so this
+// filter is a no-op for them.
+function normalizeScene(scene){
+  const drop = [];
+  scene.traverse(o => {
+    // also drops bolt_action_rifle_7_62's loose display cartridge ("bullet_54mm")
+    if(o.isMesh && /(?:^|_)(?:b|magazine_empty|bullet_54mm)$/i.test(o.name || '')){
+      drop.push(o);
+    }
+  });
+  for(const o of drop){ if(o.parent) o.parent.remove(o); }
+  scene.traverse(o => {
+    if(o.isMesh){
+      o.castShadow = false; o.receiveShadow = false;
+      if(o.material && o.material.emissive){
+        o.material.emissiveIntensity = Math.max(o.material.emissiveIntensity || 0, 0.6);
+      }
+    }
+  });
+  return scene;
+}
+
+// Fit an externally-loaded model to the view-model convention:
+//   • uniformly scaled so its longest axis = targetLength
+//   • rotated so the longest axis points along -Z (muzzle forward)
+//   • recentered so bbox center sits at the origin
+// Local procedural models are already in this convention, so this is a no-op for them.
+const _fitBox = new THREE.Box3();
+const _fitCenter = new THREE.Vector3();
+const _fitSize = new THREE.Vector3();
+function fitModelToView(scene, targetLength){
+  _fitBox.setFromObject(scene);
+  _fitBox.getSize(_fitSize);
+  _fitBox.getCenter(_fitCenter);
+  const longest = Math.max(_fitSize.x, _fitSize.y, _fitSize.z);
+  if(longest <= 0) return scene;
+  const scale = targetLength / longest;
+  // Center bbox at origin, then uniformly scale to target length.
+  // Order matters: translate → scale → rotate (rotation applied last).
+  scene.position.sub(_fitCenter);
+  scene.scale.multiplyScalar(scale);
+  // Determine which axis is longest and rotate so it maps to -Z (muzzle forward).
+  if(_fitSize.x >= _fitSize.y && _fitSize.x >= _fitSize.z){
+    // longest along X → rotate +90° around Y so +X → -Z
+    scene.rotateY(Math.PI/2);
+  }else if(_fitSize.y >= _fitSize.x && _fitSize.y >= _fitSize.z){
+    // longest along Y → rotate -90° around X so +Y → -Z
+    scene.rotateX(-Math.PI/2);
+  }
+  // else: already along Z, no rotation needed
+  return scene;
+}
+
+// Load a model from a URL — auto-detects .glb vs .gltf by extension.
+// targetLength: fit longest axis to this length (0 = skip fit, use as-is)
+async function loadModelFromURL(url, timeoutMs, targetLength){
+  const isGLB = /\.glb($|\?)/i.test(url);
+  const ctrl = new AbortController();
+  const t = setTimeout(()=>ctrl.abort(), timeoutMs);
+  try{
+    let scene;
+    if(isGLB){
+      // GLB: fetch binary, parse via gltfLoader.parse
+      const resp = await fetch(url, { signal: ctrl.signal });
+      if(!resp.ok) return null;
+      const buf = await resp.arrayBuffer();
+      // Pass the model's directory as the parse base URL so external texture
+      // references in Poly Haven GLBs resolve correctly.
+      const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
+      const gltf = await new Promise((resolve, reject) => {
+        gltfLoader.parse(buf, baseUrl, resolve, reject);
+      });
+      scene = gltf.scene;
+    }else{
+      // glTF: GLTFLoader.load resolves relative paths (.bin, textures) automatically
+      scene = await new Promise((resolve, reject) => {
+        gltfLoader.load(url, (gltf) => resolve(gltf.scene), undefined, reject);
+      });
+    }
+    normalizeScene(scene);
+    if(targetLength > 0) fitModelToView(scene, targetLength);
+    return scene;
+  }catch(e){
+    return null;
+  }finally{
+    clearTimeout(t);
+  }
+}
+
+// Parse a base64-encoded GLB (works under file:// where fetch is CORS-blocked)
+function loadModelFromB64(b64){
+  return new Promise((resolve, reject) => {
+    try{
+      const bin = atob(b64);
+      const bytes = new Uint8Array(bin.length);
+      for(let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      gltfLoader.parse(bytes.buffer, '', (gltf) => {
+        const scene = gltf.scene;
+        normalizeScene(scene);
+        resolve(scene);
+      }, reject);
+    }catch(e){ reject(e); }
+  });
+}
+
+async function loadWeaponModels(){
+  const local = {
+    rifle:  `models/rifle.glb?v=${MODEL_VERSION}`,
+    sniper: `models/sniper.glb?v=${MODEL_VERSION}`,
+    grenade:`models/grenade.glb?v=${MODEL_VERSION}`,
+  };
+  // Target view-model lengths per slot. External models are fit to these;
+  // local procedural models are already correct (pass 0 = skip fit).
+  const targetLen = { rifle: 0.55, sniper: 0.95, grenade: 0.28 };
+  for(const k of Object.keys(local)){
+    let scene = null, source = 'none';
+    // 1) try external override (if configured) — fit to target length
+    if(EXTERNAL_MODELS[k]){
+      scene = await loadModelFromURL(EXTERNAL_MODELS[k], EXTERNAL_TIMEOUT, targetLen[k] || 0);
+      if(scene){ source = 'external'; }
+      else console.warn('[GLB] external failed, falling back:', k);
+    }
+    // 2) fall back to local procedural GLB — no fit needed
+    if(!scene){
+      scene = await loadModelFromURL(local[k], 6000, 0);
+      if(scene){ source = 'local'; }
+    }
+    // 3) embedded base64 fallback — works on file:// where fetch is CORS-blocked
+    if(!scene && window.__MODEL_B64 && window.__MODEL_B64[k]){
+      try{
+        scene = await loadModelFromB64(window.__MODEL_B64[k]);
+        if(scene){ source = 'embedded'; }
+      }catch(err){ console.warn('[GLB] embedded fallback failed:', k); }
+    }
+    if(scene){
+      weaponModels[k] = scene;
+      console.log(`[GLB] LOADED ${k} (${source}) - children:`, scene.children.length);
+    }else{
+      console.warn('[GLB] FAILED', k, '- view-model will use built-in box fallback');
+    }
+  }
+  console.log('[GLB] done. keys:', Object.keys(weaponModels).join(','));
+  window.__glbStatus = { rifle: !!weaponModels.rifle, sniper: !!weaponModels.sniper, grenade: !!weaponModels.grenade };
+  window.__weaponModels = weaponModels;  // DEBUG
+}
 
 // ============== GLOBAL STATE ==============
 let scene, camera, renderer, controls;
@@ -492,7 +820,8 @@ const defaultSettings = {
   crosshairSize: 100, // 50..200 (% of default)
   sensitivity: 100,   // 20..200 (% of default mouse sens)
   fov: 75,            // 60..100 degrees
-  recoil: 100         // 0..200 (% of recoil strength)
+  recoil: 100,        // 0..200 (% of recoil strength)
+  renderScale: 0      // 0 = AUTO (dynamic resolution), else 40..150 (%)
 };
 let settings = loadSettings();
 function loadSettings(){
@@ -572,6 +901,56 @@ function playHeadshotSound(){
 function updateAudioVolume(){
   if(masterGain) masterGain.gain.value = settings.volume/100;
 }
+// Sniper shot: louder, deeper crack
+function playSniperSound(){
+  if(!audioCtx) return;
+  const t = audioCtx.currentTime;
+  const buf = audioCtx.createBuffer(1, audioCtx.sampleRate*0.22, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for(let i=0; i<data.length; i++) data[i] = (Math.random()*2-1) * Math.pow(1 - i/data.length, 1.6);
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buf;
+  const lp = audioCtx.createBiquadFilter();
+  lp.type='lowpass'; lp.frequency.setValueAtTime(2600, t); lp.frequency.exponentialRampToValueAtTime(400, t+0.2);
+  const ng = audioCtx.createGain(); ng.gain.setValueAtTime(0.7, t); ng.gain.exponentialRampToValueAtTime(0.001, t+0.24);
+  noise.connect(lp); lp.connect(ng); ng.connect(masterGain);
+  const osc = audioCtx.createOscillator();
+  osc.type='sine'; osc.frequency.setValueAtTime(150, t); osc.frequency.exponentialRampToValueAtTime(38, t+0.22);
+  const og = audioCtx.createGain(); og.gain.setValueAtTime(0.8, t); og.gain.exponentialRampToValueAtTime(0.001, t+0.26);
+  osc.connect(og); og.connect(masterGain);
+  noise.start(t); noise.stop(t+0.24);
+  osc.start(t); osc.stop(t+0.26);
+}
+// Grenade explosion: long noise boom + sub sine
+function playExplosionSound(){
+  if(!audioCtx) return;
+  const t = audioCtx.currentTime;
+  const buf = audioCtx.createBuffer(1, audioCtx.sampleRate*0.55, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for(let i=0; i<data.length; i++) data[i] = (Math.random()*2-1) * Math.pow(1 - i/data.length, 1.4);
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buf;
+  const lp = audioCtx.createBiquadFilter();
+  lp.type='lowpass'; lp.frequency.setValueAtTime(900, t); lp.frequency.exponentialRampToValueAtTime(120, t+0.5);
+  const ng = audioCtx.createGain(); ng.gain.setValueAtTime(0.85, t); ng.gain.exponentialRampToValueAtTime(0.001, t+0.55);
+  noise.connect(lp); lp.connect(ng); ng.connect(masterGain);
+  const osc = audioCtx.createOscillator();
+  osc.type='sine'; osc.frequency.setValueAtTime(95, t); osc.frequency.exponentialRampToValueAtTime(30, t+0.45);
+  const og = audioCtx.createGain(); og.gain.setValueAtTime(0.9, t); og.gain.exponentialRampToValueAtTime(0.001, t+0.5);
+  osc.connect(og); og.connect(masterGain);
+  noise.start(t); noise.stop(t+0.55);
+  osc.start(t); osc.stop(t+0.5);
+}
+// Grenade throw: short metal clink + soft whoosh
+function playThrowSound(){
+  if(!audioCtx) return;
+  const t = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  osc.type='triangle'; osc.frequency.setValueAtTime(520, t); osc.frequency.exponentialRampToValueAtTime(260, t+0.08);
+  const g = audioCtx.createGain(); g.gain.setValueAtTime(0.18, t); g.gain.exponentialRampToValueAtTime(0.001, t+0.1);
+  osc.connect(g); g.connect(masterGain);
+  osc.start(t); osc.stop(t+0.1);
+}
 let player = {
   velocity: new THREE.Vector3(),
   onGround: true,
@@ -580,7 +959,7 @@ let player = {
   score: 0,
   ammo: 30,
   maxAmmo: 30,
-  reloading: false,
+  reloading: false, reloadT: 0,
   sprinting: false
 };
 let keys = {};
@@ -593,6 +972,25 @@ let muzzleFlash;
 let platforms = [];
 let gunGroup;
 let raycaster = new THREE.Raycaster();
+// Meshes bullets are blocked by (outer walls + cover pillars).
+const solidMeshes = [];
+const solidIdSet = new Set();
+// Persistent bullet-hole decals, capped so they don't accumulate forever.
+const bulletHoles = [];
+function spawnBulletHole(point, normal, color){
+  while(bulletHoles.length >= 160){
+    const old = bulletHoles.shift();
+    scene.remove(old); old.geometry.dispose(); old.material.dispose();
+  }
+  const n = normal.clone().normalize();
+  const geo = new THREE.CircleGeometry(0.055, 10);
+  const mat = new THREE.MeshBasicMaterial({ color: color || 0x0b0c0f, transparent:true, opacity:0.9, side:THREE.DoubleSide });
+  const m = new THREE.Mesh(geo, mat);
+  m.position.copy(point).addScaledVector(n, 0.02);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1), n);
+  scene.add(m);
+  bulletHoles.push(m);
+}
 let enemiesAlive = 0;
 let gameOver = false;
 let shootCooldown = 0;
@@ -617,10 +1015,43 @@ const COMBO_TIMEOUT = 3.0;
 let lastDamageTime = 0;         // gameTime when player last took damage (for regen)
 let regenDelay = 5.0;           // seconds without damage before regen starts
 let targetFOV = 75;             // for smooth FOV transitions (sprint)
-let gunBaseY = -0.32;
+let gunBaseY = -0.30;
+let adsAmount = 0;                                        // 0=hip fire, 1=iron-sight ADS (rifle)
+const ADS_POS = new THREE.Vector3(0, -0.075, -0.46);      // rifle sights line (model y=+0.075) -> screen centre
 let fpsTime = 0, fpsCount = 0, fps = 60;
 // Camera shake offsets — tracked so we can subtract them next frame (prevents accumulation)
 let shakeOffsetX = 0, shakeOffsetY = 0;
+
+// ============== WEAPON SYSTEM (rifle / sniper) ==============
+const WEAPONS = {
+  rifle:  { label:'RIFLE',  magSize:30, reloadTime:1.40, fireDelay:0.085, auto:true,
+            damage:18, recoilPitch:0.0085, recoilYaw:0.0050, shake:0.05 },
+  sniper: { label:'SNIPER', magSize:5,  reloadTime:2.20, fireDelay:1.25,  auto:false,
+            damage:120, recoilPitch:0.030, recoilYaw:0.0110, shake:0.22, pierce:3 }
+};
+let currentWeapon = 'rifle';
+let weaponAmmo = { rifle:30, sniper:5 };
+let reloadToken = 0;           // bumped to cancel an in-progress reload (weapon switch / reset)
+let sniperGroup;               // second view model
+let sniperMuzzleFlash;
+let grenadeHandGroup;          // grenade shown in-hand during the throw wind-up
+// Scope (sniper RMB)
+let aiming = false;            // RMB held
+let scopeLevel = 0;            // 0..1 smoothed zoom state
+
+// ============== GRENADES ==============
+const GRENADE_MAX = 3;
+const GRENADE_RESUPPLY_TIME = 20;   // +1 grenade every 20s
+const GRENADE_FUSE = 1.6;
+const GRENADE_RADIUS = 6.5;
+const GRENADE_SPEED = 16;
+const GRENADE_GRAVITY = 18;
+let grenadeCount = GRENADE_MAX;
+let grenadeResupplyTimer = 0;
+let grenadeThrowCooldown = 0;
+let grenadeWindup = 0;         // >0 while the throwing animation is playing
+let grenades = [];             // live airborne grenade projectiles
+let fxLights = [];             // short-lived explosion point lights
 
 const ARENA_SIZE = 60;
 
@@ -631,6 +1062,18 @@ const _right = new THREE.Vector3();
 const _camPos = new THREE.Vector3();
 const _toPlayer = new THREE.Vector3();
 
+// ===== Movement tuning: Shift-toggled run + Ctrl slide =====
+const WALK_SPEED = 5.5;     // normal walk
+const RUN_SPEED  = 9;       // shift-toggled sprint
+const SLIDE_DURATION = 1.2; // how long the slide lasts (seconds)
+const SLIDE_SPEED   = 14;   // peak slide speed (faster than sprint)
+let runningOn = false;      // SHIFT toggles sprint on/off (no need to hold)
+let sliding = false;        // true while a Ctrl slide is active
+let slideDir = new THREE.Vector3();  // locked slide direction
+let slideT = 0;             // seconds of slide remaining
+let slideBoost = 0;         // 1 (fresh) -> 0 (ended), drives speed decay
+let eyeHeight = 1.7;        // smoothed camera eye height (slide crouches lower)
+
 // DOM refs
 const $ = id => document.getElementById(id);
 const startScreen = $('startScreen');
@@ -639,7 +1082,7 @@ const loadingEl = $('loading');
 const hud = $('hud');
 
 // ============== INIT ==============
-function init(){
+async function init(){
   scene = new THREE.Scene();
   // DAYTIME - bright sky-blue background
   scene.background = new THREE.Color(0x9bd1ee);
@@ -650,13 +1093,13 @@ function init(){
 
   // Renderer - tuned for performance
   renderer = new THREE.WebGLRenderer({
-    antialias: false,            // MSAA off - cheaper
+    antialias:true,             // Smooth weapon edges
     powerPreference: 'high-performance',
     stencil: false,
     depth: true
   });
   renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));  // cap pixel ratio
+  applyRenderScale();   // dynamic render resolution (AUTO by default, adapts to GPU)
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   document.body.appendChild(renderer.domElement);
@@ -666,6 +1109,7 @@ function init(){
 
   buildArena();
   buildLights();
+  await loadWeaponModels();
   buildWeapon();
   setupEvents();
   updateHealthUI();
@@ -712,6 +1156,8 @@ function buildArena(){
     wall.position.set(Math.sin(angle)*perimeter, wallH/2, Math.cos(angle)*perimeter);
     wall.rotation.y = angle;
     scene.add(wall);
+    wall.name = 'solid';
+    solidMeshes.push(wall); solidIdSet.add(wall.id);
 
     // top accent strip (warm orange, sun-lit)
     const strip = new THREE.Mesh(new THREE.BoxGeometry(w, 0.15, 0.15), new THREE.MeshBasicMaterial({color:0xff7a3a}));
@@ -743,6 +1189,8 @@ function buildArena(){
     const dist = 9 + Math.random()*(perimeter-14);
     p.position.set(Math.cos(angle)*dist, h/2, Math.sin(angle)*dist);
     scene.add(p);
+    p.name = 'solid';
+    solidMeshes.push(p); solidIdSet.add(p.id);
 
     // Register platform for landing (top surface AABB)
     platforms.push({
@@ -844,86 +1292,69 @@ function buildLights(){
   scene.add(camera);
 }
 
-// ============== WEAPON (improved model) ==============
+// ============== WEAPON (GLTF external models) ==============
+// Clone a cached GLB weapon scene so each instance has its own materials.
+function cloneWeaponModel(key){
+  if(!weaponModels[key]) return null;
+  const m = weaponModels[key].clone(true);
+  m.traverse(o => { if(o.isMesh) o.material = o.material.clone(); });
+  return m;
+}
 function buildWeapon(){
+  // ===== RIFLE (slot 1) =====
   gunGroup = new THREE.Group();
-
-  // Materials
-  const bodyMat = new THREE.MeshStandardMaterial({color:0x161a26, metalness:0.9, roughness:0.32, emissive:0x000508, emissiveIntensity:0.4});
-  const accentMat = new THREE.MeshBasicMaterial({color:0x00f0ff});
-  const coreMat = new THREE.MeshBasicMaterial({color:0xff007a});
-
-  // Main receiver body
-  const body = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.16, 0.55), bodyMat);
-  body.position.set(0,0,-0.05);
-  gunGroup.add(body);
-
-  // Top rail
-  const rail = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.04, 0.5), bodyMat);
-  rail.position.set(0, 0.09, -0.05);
-  gunGroup.add(rail);
-
-  // Barrel (cylinder)
-  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.45,12), bodyMat);
-  barrel.rotation.x = Math.PI/2;
-  barrel.position.set(0, 0.025, -0.4);
-  gunGroup.add(barrel);
-
-  // Muzzle device (flared)
-  const muzzle = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.04, 0.12, 12), bodyMat);
-  muzzle.rotation.x = Math.PI/2;
-  muzzle.position.set(0, 0.025, -0.62);
-  gunGroup.add(muzzle);
-
-  // Magazine (angled grip)
-  const grip = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.22, 0.12), bodyMat);
-  grip.position.set(0, -0.16, 0.06);
-  grip.rotation.x = -0.25;
-  gunGroup.add(grip);
-
-  // Trigger guard
-  const guard = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.012, 6, 12), bodyMat);
-  guard.position.set(0, -0.08, 0.1);
-  guard.rotation.x = Math.PI/2;
-  gunGroup.add(guard);
-
-  // Side accent panel (cyan glowing)
-  const sidePanel = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.08, 0.35), accentMat);
-  sidePanel.position.set(0.071, 0, 0);
-  gunGroup.add(sidePanel);
-  const sidePanel2 = sidePanel.clone();
-  sidePanel2.position.x = -0.071;
-  gunGroup.add(sidePanel2);
-
-  // Energy core (glowing magenta sphere in transparent housing)
-  const housing = new THREE.Mesh(
-    new THREE.BoxGeometry(0.08, 0.06, 0.08),
-    new THREE.MeshStandardMaterial({color:0x0a0a14, metalness:0.5, roughness:0.2, transparent:true, opacity:0.6})
-  );
-  housing.position.set(0, 0.045, 0.18);
-  gunGroup.add(housing);
-  const core = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 12), coreMat);
-  core.position.set(0, 0.045, 0.18);
-  gunGroup.add(core);
-  const coreLight = new THREE.PointLight(0xff007a, 0.6, 3);
-  coreLight.position.copy(core.position);
-  gunGroup.add(coreLight);
-
-  // Iron sight post
-  const sight = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.04, 0.012), bodyMat);
-  sight.position.set(0, 0.13, -0.25);
-  gunGroup.add(sight);
-
-  // Muzzle flash - flat plane with additive blending (no solid sphere blocking view)
+  const rifleModel = cloneWeaponModel('rifle');
+  if(rifleModel){
+    gunGroup.add(rifleModel);
+  } else {
+    // Fallback if GLB failed to load
+    gunGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.14,0.16,0.55),
+      new THREE.MeshStandardMaterial({color:0x161a26, metalness:0.9, roughness:0.32})));
+  }
+  // Muzzle flash (dynamic, procedural)
   muzzleFlash = new THREE.Mesh(
     new THREE.PlaneGeometry(0.4, 0.4),
     new THREE.MeshBasicMaterial({color:0xfff200, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide})
   );
-  muzzleFlash.position.set(0, 0.025, -0.72);
+  muzzleFlash.position.set(0, 0.005, -0.71);
   gunGroup.add(muzzleFlash);
 
-  gunGroup.position.set(0.28, gunBaseY, -0.6);
+  gunGroup.position.set(0.24, gunBaseY, -0.78);
   camera.add(gunGroup);
+
+  // ===== SNIPER RIFLE (slot 2) =====
+  sniperGroup = new THREE.Group();
+  const sniperModel = cloneWeaponModel('sniper');
+  if(sniperModel){
+    sniperGroup.add(sniperModel);
+  } else {
+    sniperGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.11,0.13,0.72),
+      new THREE.MeshStandardMaterial({color:0x10141d, metalness:0.92, roughness:0.3})));
+  }
+  sniperMuzzleFlash = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.6, 0.6),
+    new THREE.MeshBasicMaterial({color:0xbff4ff, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide})
+  );
+  sniperMuzzleFlash.position.set(0, 0.005, -0.95);
+  sniperGroup.add(sniperMuzzleFlash);
+
+  sniperGroup.position.set(0.25, gunBaseY, -0.83);
+  sniperGroup.visible = false;
+  camera.add(sniperGroup);
+
+  // ===== GRENADE in-hand model (visible only during throw wind-up) =====
+  grenadeHandGroup = new THREE.Group();
+  const grenadeModel = cloneWeaponModel('grenade');
+  if(grenadeModel){
+    grenadeHandGroup.add(grenadeModel);
+  } else {
+    grenadeHandGroup.add(new THREE.Mesh(new THREE.SphereGeometry(0.075,14,12),
+      new THREE.MeshStandardMaterial({color:0x232a33, metalness:0.7, roughness:0.45})));
+  }
+  grenadeHandGroup.position.set(0.22, -0.22, -0.45);
+  grenadeHandGroup.visible = false;
+  camera.add(grenadeHandGroup);
+  lightViewModels(renderer, camera, [gunGroup, sniperGroup, grenadeHandGroup]);
 }
 
 // Spawn telegraph: a vertical glowing pillar that warns where enemy will appear
@@ -955,6 +1386,12 @@ function spawnEnemy(spawnPos){
   const body = new THREE.Mesh(new THREE.IcosahedronGeometry(0.55, 0), bodyMat);
   enemy.add(body);
 
+  // Waist armor ring (accent) - reads as a segmented shell band
+  const waist = new THREE.Mesh(new THREE.TorusGeometry(0.6, 0.06, 6, 20), accentMat);
+  waist.rotation.x = Math.PI/2;    // horizontal band
+  waist.position.y = 0.05;
+  enemy.add(waist);
+
   // HEAD - small vulnerable target on top (instant kill on hit)
   const headMat = new THREE.MeshStandardMaterial({
     color:0x0a0e18, metalness:0.9, roughness:0.3,
@@ -985,6 +1422,12 @@ function spawnEnemy(spawnPos){
     new THREE.MeshBasicMaterial({color:0xffffff})
   );
   enemy.add(eye);
+
+  // Hover ring beneath the core (reads as a floating drone thruster)
+  const hover = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.045, 6, 20), accentMat);
+  hover.rotation.x = Math.PI/2;
+  hover.position.y = -0.16;
+  enemy.add(hover);
 
   // Light
   const lt = new THREE.PointLight(color, 1.2, 7, 2);
@@ -1029,9 +1472,11 @@ function spawnEnemy(spawnPos){
 // ============== EFFECTS ==============
 let muzzleFlashLife = 0;  // remaining life of muzzle flash
 function spawnMuzzleFlash(){
-  muzzleFlash.material.opacity = 0.8;
-  muzzleFlash.scale.set(1, 1, 1);
-  muzzleFlashLife = 0.08;
+  const flash = currentWeapon === 'sniper' ? sniperMuzzleFlash : muzzleFlash;
+  flash.material.opacity = 0.85;
+  flash.scale.set(1, 1, 1);
+  flash.rotation.z = Math.random()*Math.PI;
+  muzzleFlashLife = currentWeapon === 'sniper' ? 0.14 : 0.08;
 }
 
 function spawnTracer(origin, dir){
@@ -1044,6 +1489,23 @@ function spawnTracer(origin, dir){
   line.userData = {life:0.12, maxLife:0.12};
   scene.add(line);
   bullets.push(line);
+}
+
+// Sniper beam: a long thin additive cylinder (LineBasicMaterial can't draw thick lines)
+const _beamUp = new THREE.Vector3(0,1,0);
+function spawnSniperBeam(origin, dir){
+  const len = 80;
+  const geo = new THREE.CylinderGeometry(0.022, 0.022, len, 8, 1, true);
+  const mat = new THREE.MeshBasicMaterial({
+    color:0xaef2ff, transparent:true, opacity:0.85,
+    blending:THREE.AdditiveBlending, depthWrite:false
+  });
+  const beam = new THREE.Mesh(geo, mat);
+  beam.quaternion.setFromUnitVectors(_beamUp, dir);
+  beam.position.copy(origin).addScaledVector(dir, len/2);
+  beam.userData = {life:0.14, maxLife:0.14, isBeam:true};
+  scene.add(beam);
+  bullets.push(beam);
 }
 
 function spawnImpact(position, color){
@@ -1092,43 +1554,11 @@ function spawnEnemyDeath(position, color){
 }
 
 // ============== SHOOTING ==============
-function shoot(){
-  if(gameOver || !controls.isLocked) return;
-  if(player.reloading) return;
-  if(player.ammo <= 0){
-    $('reloadHint').classList.add('show');
-    firing = false;   // stop auto-fire when empty
-    return;
-  }
-  if(shootCooldown > 0) return;
-
-  player.ammo--;
-  updateAmmoUI();
-  shootCooldown = 0.085;                 // ~12 rounds/sec full-auto
-  cameraShake = Math.max(cameraShake, 0.05);
-  spawnMuzzleFlash();
-  playShotSound();
-
-  // ===== RECOIL: scaled by settings.recoil (0..200%) =====
-  const recoilMult = settings.recoil / 100;
-  recoilPitch += (0.0085 + Math.random()*0.0025) * recoilMult;
-  recoilYaw   += (Math.random()-0.5) * 0.005 * recoilMult;
-  // Crosshair opens up while firing
-  crosshairSpread = Math.min(1, crosshairSpread + 0.16);
-  // Visual gun kick-back (more pronounced for feel)
-  weaponRecoil = Math.max(weaponRecoil, 0.14);
-
-  const origin = new THREE.Vector3();
-  camera.getWorldPosition(origin);
-  const dir = new THREE.Vector3();
-  camera.getWorldDirection(dir);
-  spawnTracer(origin.clone().add(dir.clone().multiplyScalar(0.5)), dir);
-
-  raycaster.set(origin, dir);
-  raycaster.far = 200;
+// Build the enemy meshes -> enemy lookup used by the raycast
+function collectEnemyMeshes(){
   const meshes = [];
-  const enemyMap = new Map();      // mesh.id -> enemy
-  const headSet = new Set();       // mesh.id values that are head meshes
+  const enemyMap = new Map();   // mesh.id -> enemy
+  const headSet = new Set();    // mesh.id values that are heads
   enemies.forEach(e=>{
     e.traverse(o=>{
       if(o.isMesh){
@@ -1138,9 +1568,69 @@ function shoot(){
       }
     });
   });
-  const hits = raycaster.intersectObjects(meshes, false);
+  return {meshes, enemyMap, headSet};
+}
+
+function shoot(){
+  if(gameOver || !controls.isLocked || isPaused) return;
+  if(player.reloading) return;
+  const cfg = WEAPONS[currentWeapon];
+  if(player.ammo <= 0){
+    $('reloadHint').classList.add('show');
+    if(cfg.auto) firing = false;   // stop auto-fire when empty
+    return;
+  }
+  if(shootCooldown > 0) return;
+
+  weaponAmmo[currentWeapon]--;
+  player.ammo = weaponAmmo[currentWeapon];
+  updateAmmoUI();
+  shootCooldown = cfg.fireDelay;
+  spawnMuzzleFlash();
+
+  // ===== RECOIL: scaled by settings.recoil (0..200%) =====
+  const recoilMult = settings.recoil / 100;
+  recoilPitch += (cfg.recoilPitch + Math.random()*cfg.recoilPitch*0.3) * recoilMult;
+  recoilYaw   += (Math.random()-0.5) * cfg.recoilYaw * recoilMult;
+  if(currentWeapon === 'rifle') crosshairSpread = Math.min(1, crosshairSpread + 0.16);
+  // Visual gun kick-back
+  weaponRecoil = Math.max(weaponRecoil, currentWeapon === 'sniper' ? 0.26 : 0.14);
+  // Scoped shots kick slightly less (steadier sight picture), hip-fire shakes more
+  const shakeMult = currentWeapon === 'sniper' ? (scopeLevel > 0.5 ? 0.55 : 1) : 1;
+  cameraShake = Math.max(cameraShake, cfg.shake * shakeMult);
+
+  const origin = new THREE.Vector3();
+  camera.getWorldPosition(origin);
+  const dir = new THREE.Vector3();
+  camera.getWorldDirection(dir);
+
+  if(currentWeapon === 'sniper'){
+    playSniperSound();
+    spawnSniperBeam(origin.clone().addScaledVector(dir, 0.6), dir);
+    fireSniper(origin, dir, cfg);
+  } else {
+    playShotSound();
+    spawnTracer(origin.clone().add(dir.clone().multiplyScalar(0.5)), dir);
+    fireRifle(origin, dir, cfg);
+  }
+}
+
+// Rifle: single closest target, 18 body / instant-kill head
+function fireRifle(origin, dir, cfg){
+  const {meshes, enemyMap, headSet} = collectEnemyMeshes();
+  const allMeshes = meshes.concat(solidMeshes);
+  raycaster.set(origin, dir);
+  raycaster.far = 200;
+  const hits = raycaster.intersectObjects(allMeshes, false);
   if(hits.length){
     const hit = hits[0];
+    if(solidIdSet.has(hit.object.id)){
+      // Wall/cover — bullet stops here and leaves a bullet hole.
+      const normal = hit.face.normal.clone().transformDirection(hit.object.matrixWorld);
+      spawnBulletHole(hit.point, normal);
+      spawnImpact(hit.point, 0x22262b);
+      return;
+    }
     const enemy = enemyMap.get(hit.object.id);
     if(enemy){
       enemy.userData.hitFlash = 0.15;
@@ -1150,7 +1640,6 @@ function shoot(){
       if(headSet.has(hit.object.id)){
         // ===== HEADSHOT - instant kill =====
         spawnEnemyDeath(enemy.position.clone(), enemy.userData.color);
-        // Bigger particle burst for satisfying headshot feedback
         for(let k=0; k<10; k++){
           const geo = new THREE.SphereGeometry(0.08, 4, 4);
           const mat = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:1});
@@ -1161,15 +1650,13 @@ function shoot(){
           scene.add(p);
           particles.push(p);
         }
-        const baseScore = 250;
-        const earned = onEnemyKilled(enemy, true, baseScore);
+        const earned = onEnemyKilled(enemy, true, 250, 'head');
         showPopup('HEADSHOT +' + earned, '#fff200');
         playHeadshotSound();
       } else {
-        // body shot - normal damage
-        enemy.userData.health -= 18;
+        enemy.userData.health -= cfg.damage;
         if(enemy.userData.health <= 0){
-          const earned = onEnemyKilled(enemy, false, 100);
+          const earned = onEnemyKilled(enemy, false, 100, 'rifle');
           showPopup('+' + earned, '#00f0ff');
           playKillSound();
         } else {
@@ -1180,14 +1667,83 @@ function shoot(){
       spawnImpact(hit.point, 0x00a8c8);
     }
   } else {
-    const farPt = origin.clone().add(dir.clone().multiplyScalar(60));
-    spawnImpact(farPt, 0x00a8c8);
+    spawnImpact(origin.clone().addScaledVector(dir, 60), 0x00a8c8);
+  }
+}
+
+// Sniper: round pierces up to cfg.pierce enemies, damage falls off after each
+function fireSniper(origin, dir, cfg){
+  const {meshes, enemyMap, headSet} = collectEnemyMeshes();
+  const allMeshes = meshes.concat(solidMeshes);
+  raycaster.set(origin, dir);
+  raycaster.far = 250;
+  const hits = raycaster.intersectObjects(allMeshes, false);
+
+  // Deduplicate to one hit per enemy, preserving near -> far order.
+  // A wall/cover stops the round (no piercing past cover).
+  const hitEnemies = [];
+  const seen = new Set();
+  let lastHitPoint = null;
+  let wallHit = null;   // {point, object, face} — where the round stopped at cover
+  for(const hit of hits){
+    if(solidIdSet.has(hit.object.id)){
+      wallHit = { point:hit.point.clone(), object:hit.object, face:hit.face };
+      break;
+    }
+    const enemy = enemyMap.get(hit.object.id);
+    if(!enemy || seen.has(enemy)) continue;
+    seen.add(enemy);
+    const isHead = headSet.has(hit.object.id);
+    hitEnemies.push({enemy, point:hit.point.clone(), isHead});
+    lastHitPoint = hit.point;
+    if(hitEnemies.length >= cfg.pierce) break;
+  }
+
+  let connected = false;
+  hitEnemies.forEach((he, idx)=>{
+    const enemy = he.enemy;
+    connected = true;
+    spawnImpact(he.point, he.isHead ? 0xffffff : enemy.userData.color);
+    showHitMarker();
+    // Each successive target pierced takes 65% of the previous damage
+    const dmgMult = Math.pow(0.65, idx);
+
+    if(he.isHead){
+      spawnEnemyDeath(enemy.position.clone(), enemy.userData.color);
+      const earned = onEnemyKilled(enemy, true, 300, 'head');
+      showPopup(idx === 0 ? 'HEADSHOT +' + earned : 'PIERCE HEADSHOT +' + earned, '#fff200');
+      playHeadshotSound();
+    } else {
+      enemy.userData.hitFlash = 0.15;
+      enemy.userData.health -= Math.round(cfg.damage * dmgMult);
+      if(enemy.userData.health <= 0){
+        spawnEnemyDeath(enemy.position.clone(), enemy.userData.color);
+        const earned = onEnemyKilled(enemy, false, idx === 0 ? 200 : 150, 'sniper');
+        showPopup((idx > 0 ? 'PIERCED +' : '+') + earned, '#aef2ff');
+        playKillSound();
+      } else {
+        playHitSound();
+      }
+    }
+  });
+
+  if(wallHit){
+    // Round stopped at a wall/cover — leave a bullet hole there.
+    const normal = wallHit.face.normal.clone().transformDirection(wallHit.object.matrixWorld);
+    spawnBulletHole(wallHit.point, normal);
+    spawnImpact(wallHit.point, 0x22262b);
+  } else if(!connected){
+    spawnImpact(origin.clone().addScaledVector(dir, 80), 0x9fd8ff);
+  } else if(lastHitPoint){
+    // Beam continues past the last pierced enemy
+    spawnImpact(lastHitPoint.clone().addScaledVector(dir, 2), 0x9fd8ff);
   }
 }
 
 // Called when an enemy dies (headshot or body). Updates score, combo, kills, alive count.
+// weapon: 'rifle' | 'sniper' | 'grenade' | 'head' ... drives kill feedback styling.
 // Returns the actual score awarded (after combo multiplier).
-function onEnemyKilled(enemy, isHeadshot, baseScore){
+function onEnemyKilled(enemy, isHeadshot, baseScore, weapon){
   player.kills++;
   // Combo grows with each kill; resets if no kill within COMBO_TIMEOUT
   combo++;
@@ -1195,6 +1751,9 @@ function onEnemyKilled(enemy, isHeadshot, baseScore){
   const comboMult = 1 + (combo - 1) * 0.15;     // +15% per combo level
   const earned = Math.round(baseScore * comboMult);
   player.score += earned;
+  // Kill feedback: big center pop — 按武器类型变色/图标
+  const wp = weapon || 'rifle';
+  showKillFeedback(wp, isHeadshot, '+' + earned);
   enemiesAlive--;
   const idx = enemies.indexOf(enemy);
   if(idx>=0) enemies.splice(idx,1);
@@ -1207,6 +1766,26 @@ function onEnemyKilled(enemy, isHeadshot, baseScore){
   if(combo === 15) showPopup('RAMPAGE!',   '#fff200');
   if(combo === 25) showPopup('LEGENDARY!', '#fff200');
   return earned;
+}
+
+// Center-screen kill feedback — 和 multiplayer.html 保持一致的 API
+function showKillFeedback(weapon, isHeadshot, sub){
+  const el = $('killFeedback');
+  let kfCls = 'kf-kill', line1 = '◆  KILL';
+  if(isHeadshot || weapon === 'head'){ kfCls = 'kf-headshot'; line1 = '☠ HEADSHOT ☠'; }
+  else if(weapon === 'knife')        { kfCls = 'kf-knife';   line1 = '🗡  KNIFE KILL'; }
+  else if(weapon === 'grenade')      { kfCls = 'kf-explode'; line1 = '💥  FRAG KILL'; }
+  else if(weapon === 'rocket')       { kfCls = 'kf-explode'; line1 = '💥  ROCKET KILL'; }
+  else if(weapon === 'sniper')       { kfCls = 'kf-kill';    line1 = '✚  KILL'; }
+
+  el.className = '';
+  el.classList.add(kfCls, 'show');
+  const l1 = el.querySelector('.kf-line1');
+  const l2 = el.querySelector('.kf-line2');
+  if(l1) l1.textContent = line1;
+  if(l2) l2.textContent = sub || '';
+  void el.offsetWidth;   // restart animation
+  el.classList.add('show');
 }
 
 // Floating score popup at center of screen (slight random offset)
@@ -1237,24 +1816,339 @@ function updateComboUI(){
 // Legacy kill handler - now consolidated into onEnemyKilled, kept for safety
 function killEnemy(enemy){
   spawnEnemyDeath(enemy.position.clone(), enemy.userData.color);
-  const earned = onEnemyKilled(enemy, false, 100);
+  const earned = onEnemyKilled(enemy, false, 100, 'rifle');
   showPopup('+' + earned, '#00f0ff');
 }
 
 function reload(){
-  if(gameOver || player.reloading || player.ammo === player.maxAmmo) return;
+  if(gameOver || player.reloading) return;
+  const w = currentWeapon;
+  const cfg = WEAPONS[w];
+  if(weaponAmmo[w] >= cfg.magSize) return;
+  const token = ++reloadToken;
   player.reloading = true;
+  player.reloadT = 0;               // drives the reload dip animation
   const hint = $('reloadHint');
   hint.classList.remove('show');
-  hint.textContent = 'RELOADING...';
+  hint.textContent = 'RELOADING ' + cfg.label + '...';
   hint.classList.add('show');
   setTimeout(()=>{
-    player.ammo = player.maxAmmo;
+    // Aborted if the player switched weapon (or reset the game) mid-reload
+    if(token !== reloadToken || w !== currentWeapon) return;
+    weaponAmmo[w] = cfg.magSize;
+    player.ammo = weaponAmmo[w];
+    player.maxAmmo = cfg.magSize;
     player.reloading = false;
     hint.classList.remove('show');
     hint.textContent = 'PRESS R TO RELOAD';
     updateAmmoUI();
-  }, 1400);
+  }, cfg.reloadTime * 1000);
+}
+
+// ============== WEAPON SWITCHING ==============
+function switchWeapon(w){
+  if(!WEAPONS[w] || w === currentWeapon) return;
+  if(gameOver) return;
+  // Cancel any in-progress reload of the old weapon
+  reloadToken++;
+  player.reloading = false; player.reloadT = 0;
+  // Clear any leftover muzzle flash from the old weapon
+  muzzleFlashLife = 0;
+  if(muzzleFlash) muzzleFlash.material.opacity = 0;
+  if(sniperMuzzleFlash) sniperMuzzleFlash.material.opacity = 0;
+  currentWeapon = w;
+  player.ammo = weaponAmmo[w];
+  player.maxAmmo = WEAPONS[w].magSize;
+  // Leaving scope / iron sight whenever the weapon changes
+  aiming = false;
+  const hint = $('reloadHint');
+  hint.classList.remove('show');
+  hint.textContent = 'PRESS R TO RELOAD';
+  updateAmmoUI();
+  updateWeaponUI();
+}
+
+function updateWeaponUI(){
+  $('weaponNameLabel').textContent = WEAPONS[currentWeapon].label;
+  $('slotRifle').classList.toggle('active', currentWeapon === 'rifle');
+  $('slotSniper').classList.toggle('active', currentWeapon === 'sniper');
+}
+
+// ============== GRENADES ==============
+function updateGrenadeUI(){
+  $('grenadeValue').textContent = grenadeCount;
+  $('grenadePanel').classList.toggle('empty', grenadeCount <= 0);
+}
+
+function throwGrenade(){
+  if(gameOver || !controls.isLocked || isPaused) return;
+  if(grenadeCount <= 0 || grenadeThrowCooldown > 0 || grenadeWindup > 0) return;
+  grenadeCount--;
+  updateGrenadeUI();
+  grenadeThrowCooldown = 0.9;
+  grenadeWindup = 0.42;       // arm swing before the grenade leaves the hand
+  playThrowSound();
+}
+
+// Spawn the live grenade projectile when the wind-up finishes
+const _gOrigin = new THREE.Vector3();
+const _gDir = new THREE.Vector3();
+const _gRight = new THREE.Vector3();
+const _gUp = new THREE.Vector3(0,1,0);
+function launchGrenade(){
+  camera.getWorldPosition(_gOrigin);
+  camera.getWorldDirection(_gDir);
+  _gRight.set(1,0,0).applyQuaternion(camera.quaternion);
+
+  // Use GLB grenade model (scaled to match gameplay radius), fallback to procedural
+  let mesh;
+  const gModel = cloneWeaponModel('grenade');
+  if(gModel){
+    mesh = gModel;
+    mesh.scale.setScalar(1.2);   // scale GLB grenade to match gameplay radius
+    // Poly Haven stick_grenade has no emissive material; add an orange glow
+    // so the fuse-down blink (which drives emissiveIntensity) reads as a
+    // visible warning light instead of doing nothing.
+    mesh.traverse(o => { if(o.isMesh && o.material && o.material.emissive){ o.material.emissive.setHex(0xff5a1a); o.material.emissiveIntensity = 0.35; } });
+  } else {
+    mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.12, 12, 10),
+      new THREE.MeshStandardMaterial({color:0x2a323c, metalness:0.65, roughness:0.45, emissive:0xff5a1a, emissiveIntensity:0.35})
+    );
+    const band = new THREE.Mesh(
+      new THREE.TorusGeometry(0.095, 0.02, 8, 16),
+      new THREE.MeshBasicMaterial({color:0xffb060})
+    );
+    band.rotation.x = Math.PI/2;
+    mesh.add(band);
+  }
+
+  const pos = _originForGrenade();
+  mesh.position.copy(pos);
+  scene.add(mesh);
+
+  const vel = _gDir.clone().multiplyScalar(GRENADE_SPEED)
+    .addScaledVector(_gUp, 3.4)
+    .addScaledVector(_gRight, 0.6);
+  // Carry a bit of the player's running momentum
+  vel.x += player.velocity.x * 0.35;
+  vel.z += player.velocity.z * 0.35;
+
+  grenades.push({
+    mesh, vel,
+    fuse: GRENADE_FUSE,
+    spin: new THREE.Vector3((Math.random()-0.5)*12, (Math.random()-0.5)*12, (Math.random()-0.5)*12)
+  });
+}
+function _originForGrenade(){
+  _gOrigin.addScaledVector(_gDir, 0.55).addScaledVector(_gRight, 0.12).addScaledVector(_gUp, -0.18);
+  return _gOrigin;
+}
+
+function updateGrenades(dt){
+  // Throw wind-up / arm animation
+  if(grenadeWindup > 0){
+    grenadeWindup -= dt;
+    if(grenadeWindup <= 0){
+      grenadeWindup = 0;
+      launchGrenade();
+    }
+  }
+  if(grenadeThrowCooldown > 0) grenadeThrowCooldown = Math.max(0, grenadeThrowCooldown - dt);
+
+  // Slow resupply: +1 every GRENADE_RESUPPLY_TIME, up to GRENADE_MAX
+  if(grenadeCount < GRENADE_MAX && !gameOver){
+    grenadeResupplyTimer += dt;
+    if(grenadeResupplyTimer >= GRENADE_RESUPPLY_TIME){
+      grenadeResupplyTimer = 0;
+      grenadeCount++;
+      updateGrenadeUI();
+    }
+  } else {
+    grenadeResupplyTimer = 0;
+  }
+
+  // Physics: 2 substeps so fast/long frames don't tunnel through the floor
+  const R = 0.12;               // grenade collision radius
+  const WALL = ARENA_SIZE - 0.3;
+  for(let i=grenades.length-1; i>=0; i--){
+    const g = grenades[i];
+    g.fuse -= dt;
+    const steps = 2;
+    const s = dt / steps;
+    for(let k=0; k<steps; k++){
+      g.vel.y -= GRENADE_GRAVITY * s;
+      g.mesh.position.addScaledVector(g.vel, s);
+      const p = g.mesh.position;
+
+      // Floor bounce
+      if(p.y < R){
+        p.y = R;
+        if(g.vel.y < 0) g.vel.y *= -0.45;
+        g.vel.x *= 0.72;
+        g.vel.z *= 0.72;
+      }
+      // Outer walls
+      if(p.x > WALL){ p.x = WALL; g.vel.x = -Math.abs(g.vel.x)*0.5; }
+      if(p.x < -WALL){ p.x = -WALL; g.vel.x = Math.abs(g.vel.x)*0.5; }
+      if(p.z > WALL){ p.z = WALL; g.vel.z = -Math.abs(g.vel.z)*0.5; }
+      if(p.z < -WALL){ p.z = -WALL; g.vel.z = Math.abs(g.vel.z)*0.5; }
+
+      // Cover pillars (full-height AABB expanded by grenade radius)
+      for(let j=0; j<platforms.length; j++){
+        const pl = platforms[j];
+        if(p.x > pl.x1 - R && p.x < pl.x2 + R &&
+           p.z > pl.z1 - R && p.z < pl.z2 + R &&
+           p.y > -R && p.y < pl.top + R){
+          // Pick the axis of least penetration and push out + bounce
+          const pen = [
+            p.x - (pl.x1 - R),   // 0: past x- face
+            (pl.x2 + R) - p.x,   // 1: past x+ face
+            p.z - (pl.z1 - R),   // 2
+            (pl.z2 + R) - p.z,   // 3
+            p.y - (-R),          // 4: below
+            (pl.top + R) - p.y   // 5: above (land on top)
+          ];
+          let m = 0;
+          for(let n=1; n<6; n++) if(pen[n] < pen[m]) m = n;
+          if(m === 0){ p.x = pl.x1 - R; g.vel.x = -Math.abs(g.vel.x)*0.4; }
+          else if(m === 1){ p.x = pl.x2 + R; g.vel.x = Math.abs(g.vel.x)*0.4; }
+          else if(m === 2){ p.z = pl.z1 - R; g.vel.z = -Math.abs(g.vel.z)*0.4; }
+          else if(m === 3){ p.z = pl.z2 + R; g.vel.z = Math.abs(g.vel.z)*0.4; }
+          else if(m === 4){ /* inside floor region - ignore */ }
+          else { p.y = pl.top + R; if(g.vel.y < 0) g.vel.y *= -0.4; g.vel.x *= 0.7; g.vel.z *= 0.7; }
+        }
+      }
+    }
+    g.mesh.rotation.x += g.spin.x * dt;
+    g.mesh.rotation.y += g.spin.y * dt;
+    g.mesh.rotation.z += g.spin.z * dt;
+
+    // Blink the emissive faster as the fuse runs down
+    // Grenade is a Group (cloned GLB with multiple child meshes), so traverse
+    // to set emissiveIntensity on every child mesh that has an emissive material.
+    const blink = g.fuse < 0.5 ? (Math.sin(performance.now()*0.03) > 0 ? 1.2 : 0.15) : 0.35;
+    g.mesh.traverse(o => { if(o.isMesh && o.material && o.material.emissive) o.material.emissiveIntensity = blink; });
+
+    if(g.fuse <= 0){
+      const pos = g.mesh.position.clone();
+      g.mesh.traverse(o=>{
+        if(o.geometry) o.geometry.dispose();
+        if(o.material) o.material.dispose();
+      });
+      scene.remove(g.mesh);
+      grenades.splice(i, 1);
+      explodeGrenade(pos);
+    }
+  }
+
+  // Short-lived explosion lights
+  for(let i=fxLights.length-1; i>=0; i--){
+    const fx = fxLights[i];
+    fx.life -= dt;
+    if(fx.life <= 0){
+      scene.remove(fx.light);
+      fxLights.splice(i,1);
+    } else {
+      fx.light.intensity = fx.base * (fx.life / fx.maxLife);
+    }
+  }
+}
+
+// Explosion: radial AoE damage to enemies + self-damage, FX, shake, sound
+function explodeGrenade(pos){
+  spawnExplosionFX(pos);
+  playExplosionSound();
+
+  // Camera shake falls off with distance from the blast
+  const eyeDist = camera.position.distanceTo(pos);
+  const shakeAmt = 0.55 * THREE.MathUtils.clamp(1 - eyeDist/20, 0, 1);
+  cameraShake = Math.max(cameraShake, shakeAmt);
+
+  // ===== Enemy AoE damage (iterate backwards: onEnemyKilled splices the array) =====
+  for(let i=enemies.length-1; i>=0; i--){
+    const e = enemies[i];
+    const d = e.position.distanceTo(pos);
+    if(d >= GRENADE_RADIUS) continue;
+    const dmg = Math.round(130 * (1 - d/GRENADE_RADIUS));
+    if(dmg >= e.userData.health){
+      spawnEnemyDeath(e.position.clone(), e.userData.color);
+      const earned = onEnemyKilled(e, false, 150, 'grenade');
+      showPopup('FRAG +' + earned, '#ff9a3a');
+    } else {
+      e.userData.health -= dmg;
+      e.userData.hitFlash = 0.15;
+      spawnImpact(e.position.clone(), e.userData.color);
+    }
+  }
+
+  // ===== Self damage (keeps point-blank spamming risky) =====
+  if(eyeDist < GRENADE_RADIUS){
+    const selfDmg = Math.round(45 * (1 - eyeDist/GRENADE_RADIUS));
+    if(selfDmg > 0) takeDamage(selfDmg);
+  }
+}
+
+function spawnExplosionFX(pos){
+  // Core flash sphere (additive, scales up while fading)
+  const flash = new THREE.Mesh(
+    new THREE.SphereGeometry(0.9, 18, 14),
+    new THREE.MeshBasicMaterial({
+      color:0xffd080, transparent:true, opacity:0.95,
+      blending:THREE.AdditiveBlending, depthWrite:false
+    })
+  );
+  flash.position.copy(pos);
+  flash.position.y = Math.max(0.3, pos.y);
+  flash.userData = {isFlash:true, life:0.28, maxLife:0.28};
+  scene.add(flash);
+  particles.push(flash);
+
+  // Shockwave ring on the ground
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.4, 0.75, 32),
+    new THREE.MeshBasicMaterial({color:0xff8a3a, transparent:true, opacity:0.9, side:THREE.DoubleSide})
+  );
+  ring.position.set(pos.x, 0.03, pos.z);
+  ring.rotation.x = -Math.PI/2;
+  ring.userData = {isRing:true, life:0.55, maxLife:0.55, scale:1};
+  scene.add(ring);
+  particles.push(ring);
+
+  // Sparks
+  for(let i=0; i<20; i++){
+    const p = new THREE.Mesh(
+      new THREE.BoxGeometry(0.09,0.09,0.09),
+      new THREE.MeshBasicMaterial({color: Math.random()>0.4 ? 0xffb050 : 0xfff2a0, transparent:true, opacity:1})
+    );
+    p.position.copy(pos);
+    const v = new THREE.Vector3((Math.random()-0.5), Math.random()*0.9+0.2, (Math.random()-0.5))
+      .normalize().multiplyScalar(6 + Math.random()*10);
+    p.userData = {velocity:v, life:0.5+Math.random()*0.4, maxLife:0.9, gravity:true};
+    scene.add(p);
+    particles.push(p);
+  }
+  // Smoke puffs (slow, rising, barely affected by gravity)
+  for(let i=0; i<7; i++){
+    const p = new THREE.Mesh(
+      new THREE.SphereGeometry(0.35 + Math.random()*0.25, 8, 6),
+      new THREE.MeshBasicMaterial({color:0x555a60, transparent:true, opacity:0.55})
+    );
+    p.position.copy(pos);
+    p.position.x += (Math.random()-0.5)*1.2;
+    p.position.z += (Math.random()-0.5)*1.2;
+    const v = new THREE.Vector3((Math.random()-0.5)*1.5, 2.2 + Math.random()*1.5, (Math.random()-0.5)*1.5);
+    p.userData = {velocity:v, life:0.9+Math.random()*0.5, maxLife:1.4, gravity:false, smoke:true};
+    scene.add(p);
+    particles.push(p);
+  }
+
+  // One-frame point light
+  const light = new THREE.PointLight(0xff9a40, 6, 18, 2);
+  light.position.copy(pos);
+  light.position.y = Math.max(1, pos.y);
+  scene.add(light);
+  fxLights.push({light, life:0.25, maxLife:0.25, base:6});
 }
 
 // ============== SPAWN SCHEDULING (time-based) ==============
@@ -1289,8 +2183,12 @@ function triggerSpawn(){
 
 // ============== UI ==============
 function updateAmmoUI(){
-  $('ammoValue').textContent = player.ammo;
-  if(player.ammo <= 5 && !player.reloading) $('reloadHint').classList.add('show');
+  $('ammoValue').textContent = weaponAmmo[currentWeapon];
+  const maxEl = document.querySelector('#ammoPanel .max');
+  if(maxEl) maxEl.textContent = '/' + WEAPONS[currentWeapon].magSize;
+  // Sniper mag is tiny - warn earlier
+  const low = currentWeapon === 'sniper' ? 1 : 5;
+  if(weaponAmmo[currentWeapon] <= low && !player.reloading) $('reloadHint').classList.add('show');
   else if(!player.reloading) $('reloadHint').classList.remove('show');
 }
 function updateScoreUI(){
@@ -1341,8 +2239,33 @@ function resetGame(){
   player.health = 100;
   player.kills = 0;
   player.score = 0;
-  player.ammo = player.maxAmmo;
-  player.reloading = false;
+  player.reloading = false; player.reloadT = 0;
+  // Reset weapons
+  reloadToken++;
+  currentWeapon = 'rifle';
+  weaponAmmo = { rifle:30, sniper:5 };
+  player.ammo = 30;
+  player.maxAmmo = 30;
+  aiming = false;
+  scopeLevel = 0;
+  $('scopeOverlay').style.opacity = 0;
+  if(gunGroup) gunGroup.visible = true;
+  if(sniperGroup) sniperGroup.visible = false;
+  if(grenadeHandGroup) grenadeHandGroup.visible = false;
+  // Reset grenades
+  grenades.forEach(g=>{
+    g.mesh.traverse(o=>{ if(o.geometry) o.geometry.dispose(); if(o.material) o.material.dispose(); });
+    scene.remove(g.mesh);
+  });
+  grenades = [];
+  fxLights.forEach(fx=>scene.remove(fx.light));
+  fxLights = [];
+  grenadeCount = GRENADE_MAX;
+  grenadeResupplyTimer = 0;
+  grenadeThrowCooldown = 0;
+  grenadeWindup = 0;
+  updateGrenadeUI();
+  updateWeaponUI();
   // Reset fire/recoil state
   firing = false;
   recoilPitch = 0; recoilPitchApplied = 0;
@@ -1358,8 +2281,8 @@ function resetGame(){
   combo = 0;
   comboTimer = 0;
   lastDamageTime = 0;
-  targetFOV = 75;
-  camera.fov = 75;
+  targetFOV = settings.fov;
+  camera.fov = settings.fov;
   camera.updateProjectionMatrix();
   gameOver = false;
   camera.position.set(0, 1.7, 0);
@@ -1401,6 +2324,111 @@ function endGame(){
   }, 600);
 }
 
+// Stop spawners and dispose Three.js objects in an array of entities
+function _disposeEntities(arr){
+  for(const e of arr){
+    if(e && e.geometry){ try{ e.geometry.dispose(); }catch(_){} }
+    if(e && e.material){
+      if(Array.isArray(e.material)){ for(const m of e.material){ try{ m.dispose(); }catch(_){} } }
+      else { try{ e.material.dispose(); }catch(_){} }
+    }
+    if(e && e.parent) e.parent.remove(e);
+  }
+}
+
+// ---------- 回到主菜单：彻底重置所有游戏状态，不刷新浏览器 ----------
+function backToMainMenu(){
+  // 1) 流程态 —— 总开关
+  gameOver = true;      // 让主循环里所有 gameOver 判断短路，避免复活/射击等逻辑继续跑
+  isPaused = false;
+  firing = false;
+  aiming = false;
+  reloadToken++;
+  keys = {};
+
+  // 2) 输入/动作态
+  runningOn = false;
+  sliding = false; slideT = 0; slideBoost = 0;
+  grenadeWindup = 0;
+  grenadeThrowCooldown = 0;
+  crosshairSpread = 0;
+  recoilPitch = 0; recoilPitchApplied = 0;
+  recoilYaw = 0; recoilYawApplied = 0;
+  cameraShake = 0; shakeOffsetX = 0; shakeOffsetY = 0;
+  scopeLevel = 0; adsAmount = 0;
+  damageVignetteTimer = 0;
+  shootCooldown = 0;
+  eyeHeight = 1.7;
+  targetFOV = 75;
+  clock = new THREE.Clock();
+
+  // 3) 玩家状态
+  player.velocity.set(0,0,0);
+  player.onGround = true;
+  player.health = 100;
+  player.kills = 0;
+  player.score = 0;
+  player.ammo = 30;
+  player.maxAmmo = 30;
+  player.reloading = false; player.reloadT = 0;
+  player.sprinting = false;
+
+  // 4) 清空战场实体（从 scene 移除 + dispose 资源，避免内存泄漏）
+  for(const e of enemies){ if(e && e.group) scene.remove(e.group); }
+  enemies = []; enemiesAlive = 0;
+  _disposeEntities(bullets); bullets = [];
+  _disposeEntities(particles); particles = [];
+  for(const g of grenades){ if(g.mesh) scene.remove(g.mesh); if(g.light) scene.remove(g.light); }
+  grenades = [];
+  for(const l of fxLights){ scene.remove(l); }
+  fxLights = [];
+  for(const t of telegraphs){ if(t.mesh) scene.remove(t.mesh); }
+  telegraphs.length = 0;
+  for(const h of bulletHoles){ scene.remove(h); h.geometry.dispose(); h.material.dispose(); }
+  bulletHoles.length = 0;
+
+  // 5) 击杀/连击/波次/重生计时器
+  combo = 0; comboTimer = 0;
+  lastDamageTime = 0;
+  gameTime = 0;
+  spawnGeneration++;      // 让已排队的 triggerSpawn timeout 作废旧引用
+  nextSpawnTime = 0;
+  spawnInterval = 3.0;
+  maxEnemies = 6;
+
+  // 6) 重置武器/手雷/弹药
+  currentWeapon = 'rifle';
+  weaponAmmo = { rifle:30, sniper:5 };
+  weaponRecoil = 0;
+  grenadeCount = GRENADE_MAX;
+  grenadeResupplyTimer = 0;
+  if(grenadeHandGroup) grenadeHandGroup.visible = false;
+  if(sniperGroup) sniperGroup.visible = false;
+  if(gunGroup) gunGroup.visible = true;
+
+  // 7) UI 层 —— 隐藏所有战斗/暂停层，显示主菜单
+  hud.classList.remove('active');
+  $('resumeOverlay').classList.remove('show');
+  $('settingsOverlay').classList.remove('show');
+  $('pauseHint').classList.remove('show');
+  $('scopeOverlay').style.opacity = 0;
+  $('ironOverlay').style.opacity = 0;
+  $('damageVignette').classList.remove('flash');
+  $('waveBanner').classList.remove('show');
+  $('killFeedback').classList.remove('show');
+  gameOverScreen.style.display = 'none';
+  startScreen.classList.remove('hidden');
+
+  // 8) 指针必须解锁 —— 主菜单不需要锁定
+  if(controls.isLocked) controls.unlock();
+
+  // 9) 重置相机到原点
+  if(camera){
+    camera.position.set(0, 1.7, 0);
+    camera.rotation.set(0, 0, 0);
+  }
+}
+
 // Format seconds as MM:SS
 function formatTime(s){
   const m = Math.floor(s/60);
@@ -1410,8 +2438,15 @@ function formatTime(s){
 
 // ============== EVENTS ==============
 function setupEvents(){
-  $('startBtn').addEventListener('click', startGame);
+  $('startSingleBtn').addEventListener('click', startGame);
+  $('startMultiBtn').addEventListener('click', ()=>{ location.href = '/multiplayer.html'; });
   $('restartBtn').addEventListener('click', startGame);
+  $('resumeBtn').addEventListener('click', ()=>{
+    if(gameOver) return;
+    $('resumeOverlay').classList.remove('show');
+    controls.lock();
+  });
+  $('backToMainBtn').addEventListener('click', backToMainMenu);
 
   // ===== SETTINGS PANEL =====
   $('settingsBtn').addEventListener('click', ()=>openSettings(false));
@@ -1424,27 +2459,67 @@ function setupEvents(){
   bindSlider('sensSlider', 'sensVal', 'sensitivity', v=>{ if(controls) controls.pointerSpeed = v/100; });
   bindSlider('fovSlider', 'fovVal', 'fov', v=>{ applyFOV(); });
   bindSlider('recoilSlider', 'recoilVal', 'recoil', v=>{});
+  bindSlider('rsSlider', 'rsVal', 'renderScale', v=>{ applyRenderScale(); });
 
-  // ===== PAUSE / SETTINGS TOGGLE (P key) =====
+  // ===== PAUSE / WEAPON KEYS =====
   document.addEventListener('keydown', e=>{
     keys[e.code] = true;
-    if(e.code === 'KeyR' && controls.isLocked && !gameOver) reload();
+    if(e.repeat) return;   // ignore OS key-repeat for discrete actions
+    // P toggles settings even while pointer is unlocked (paused)
     if(e.code === 'KeyP'){
       if(isPaused) closeSettings();
-      else openSettings(true);
+      else if(controls.isLocked && !gameOver) openSettings(true);
+      return;
+    }
+    if(!controls.isLocked || gameOver) return;
+    if(e.code === 'KeyR') reload();
+    if(e.code === 'Digit1') switchWeapon('rifle');
+    if(e.code === 'Digit2') switchWeapon('sniper');
+    if(e.code === 'KeyG') throwGrenade();
+    // SHIFT toggles sprint on/off (no need to hold it down)
+    if(e.code === 'ShiftLeft' || e.code === 'ShiftRight'){
+      runningOn = !runningOn;
+      return;
+    }
+    // CTRL slides forward while running (grounded, hip-fire only)
+    if((e.code === 'ControlLeft' || e.code === 'ControlRight') &&
+       runningOn && player.onGround && !sliding && scopeLevel < 0.5){
+      sliding = true;
+      slideT = SLIDE_DURATION;
+      slideBoost = 1;
+      // Lock slide direction to current input dir (or facing) for a clean forward slide
+      const sd = _moveDir.lengthSq() > 0 ? _moveDir : _front;
+      slideDir.set(sd.x, 0, sd.z).normalize();
+      return;
     }
   });
   document.addEventListener('keyup', e=>{ keys[e.code] = false; });
 
   document.addEventListener('mousedown', e=>{
-    if(e.button === 0 && controls.isLocked && !gameOver && !isPaused) firing = true;
+    if(!controls.isLocked || gameOver || isPaused) return;
+    if(e.button === 0){
+      firing = true;
+      // Semi-auto weapons (sniper) fire once per click edge
+      if(!WEAPONS[currentWeapon].auto) shoot();
+    }
+    // Right-click toggles ADS: sniper scope / rifle iron sight (avoids browser RMB-hold gesture)
+    if(e.button === 2 && (currentWeapon === 'sniper' || currentWeapon === 'rifle')){
+      aiming = !aiming;
+    }
   });
   document.addEventListener('mouseup', e=>{
     if(e.button === 0) firing = false;
   });
-  document.addEventListener('mouseleave', ()=>{ firing = false; });
-  // Stop firing if pointer lock is released
-  controls.addEventListener('unlock', ()=>{ firing = false; });
+  document.addEventListener('mouseleave', ()=>{ firing = false; aiming = false; });
+  // Stop firing / aiming if pointer lock is released
+  controls.addEventListener('unlock', ()=>{
+    firing = false; aiming = false;
+    // ESC released the pointer mid-game -> offer a click-to-resume overlay
+    if(gameOver || isPaused || !hud.classList.contains('active')) return;
+    $('resumeOverlay').classList.add('show');
+  });
+  controls.addEventListener('lock', ()=>{ $('resumeOverlay').classList.remove('show'); });
+  // (resumeBtn / backToMainBtn handle clicks — no blanket overlay click handler)
 
   window.addEventListener('resize', ()=>{
     camera.aspect = innerWidth/innerHeight;
@@ -1502,6 +2577,7 @@ function openSettings(pauseGame){
   $('sensSlider').value = settings.sensitivity; $('sensVal').textContent = settings.sensitivity;
   $('fovSlider').value = settings.fov; $('fovVal').textContent = settings.fov;
   $('recoilSlider').value = settings.recoil; $('recoilVal').textContent = settings.recoil;
+  $('rsSlider').value = settings.renderScale; $('rsVal').textContent = settings.renderScale > 0 ? settings.renderScale + '%' : 'AUTO';
 }
 function closeSettings(){
   $('settingsOverlay').classList.remove('show');
@@ -1540,10 +2616,29 @@ function applyFOV(){
     camera.updateProjectionMatrix();
   }
 }
+// ===== DYNAMIC RENDER RESOLUTION =====
+// Renders at a scaled resolution to keep FPS high on weak GPUs. 0 = AUTO mode,
+// which steps the scale down/up every 0.5s based on the measured frame rate.
+let autoScale = 100;
+function applyRenderScale(){
+  if(!renderer) return;
+  const scale = settings.renderScale > 0 ? settings.renderScale : autoScale;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5) * scale / 100);
+  const v = $('rsVal');
+  if(v) v.textContent = settings.renderScale > 0 ? settings.renderScale + '%' : 'AUTO';
+}
+function autoResolutionTick(fpsVal){
+  if(!renderer || settings.renderScale > 0) return;   // manual override
+  const prev = autoScale;
+  if(fpsVal < 50) autoScale = Math.max(35, autoScale - 10);
+  else if(fpsVal > 78 && autoScale < 100) autoScale = Math.min(100, autoScale + 10);
+  if(autoScale !== prev) applyRenderScale();
+}
 function applyAllSettings(){
   applyBrightness();
   applyCrosshairSize();
   applyFOV();
+  applyRenderScale();
   updateAudioVolume();
   if(controls) controls.pointerSpeed = settings.sensitivity / 100;
 }
@@ -1562,17 +2657,20 @@ function update(dt){
   // Muzzle flash - smooth ease-out fade (no flicker from linear step)
   if(muzzleFlashLife > 0){
     muzzleFlashLife -= dt;
+    const flash = currentWeapon === 'sniper' ? sniperMuzzleFlash : muzzleFlash;
+    const flashMax = currentWeapon === 'sniper' ? 0.14 : 0.08;
     if(muzzleFlashLife <= 0){
-      muzzleFlash.material.opacity = 0;
+      flash.material.opacity = 0;
     } else {
       // ease-out curve based on remaining life ratio
-      const ratio = muzzleFlashLife / 0.08;
-      muzzleFlash.material.opacity = 0.8 * ratio * ratio;
+      const ratio = muzzleFlashLife / flashMax;
+      flash.material.opacity = 0.85 * ratio * ratio;
     }
   }
 
-  // ===== AUTO-FIRE: while LMB held, keep shooting at fire-rate =====
-  if(firing && shootCooldown <= 0){
+  // ===== AUTO-FIRE: full-auto weapons keep firing while LMB held =====
+  // Semi-auto weapons (sniper) only fire on the mousedown edge (see setupEvents)
+  if(firing && shootCooldown <= 0 && WEAPONS[currentWeapon].auto){
     shoot();
   }
 
@@ -1595,6 +2693,16 @@ function update(dt){
   recoilPitchApplied = recoilPitch;
   recoilYawApplied = recoilYaw;
 
+  // ===== ADS (sniper scope / rifle iron sight): smooth zoom in/out =====
+  const isSniper = currentWeapon === 'sniper';
+  const wantScope = aiming && controls.isLocked;
+  scopeLevel += ((wantScope ? 1 : 0) - scopeLevel) * Math.min(1, dt*14);
+  // Sniper shows the scope overlay; rifle shows the iron-sight ring
+  $('scopeOverlay').style.opacity = isSniper ? scopeLevel : 0;
+  $('ironOverlay').style.opacity = isSniper ? 0 : scopeLevel;
+  // Lower mouse sensitivity while looking through scope / iron sight
+  controls.pointerSpeed = (settings.sensitivity / 100) * (1 - scopeLevel * 0.62);
+
   // ===== CROSSHAIR: spread opens the gap (CSS var) instead of scaling =====
   // Idle: tight crosshair. Firing: gap grows up to ~22px so player sees precision drop.
   if(firing){
@@ -1605,8 +2713,8 @@ function update(dt){
   const ch = $('crosshair');
   const gap = 6 + crosshairSpread * 18;        // 6px (idle) -> 24px (full auto)
   ch.style.setProperty('--gap', gap + 'px');
-  // Slight opacity drop at max spread so player notices loss of accuracy
-  ch.style.opacity = 1 - crosshairSpread * 0.25;
+  // Slight opacity drop at max spread; crosshair itself fades out while scoped
+  ch.style.opacity = (1 - crosshairSpread * 0.25) * (1 - scopeLevel);
 
   // ===== MOVEMENT (FIXED) =====
   // Compute camera-relative forward & right vectors (flat on XZ plane)
@@ -1623,16 +2731,33 @@ function update(dt){
   if(keys['KeyA']) _moveDir.sub(_right);
   if(_moveDir.lengthSq() > 0) _moveDir.normalize();
 
-  const sprinting = (keys['ShiftLeft']||keys['ShiftRight']) && _moveDir.lengthSq() > 0;
+  const sprinting = runningOn && _moveDir.lengthSq() > 0 && scopeLevel < 0.5;
   player.sprinting = sprinting;
-  const speed = sprinting ? 9 : 5.5;
-  // FOV widens slightly when sprinting (sense of speed)
-  targetFOV = sprinting ? 85 : 75;
+  // Advance slide state (decay speed over its duration)
+  if(sliding){
+    slideT -= dt;
+    slideBoost = Math.max(0, slideT / SLIDE_DURATION);
+    if(slideT <= 0){ sliding = false; slideBoost = 0; }
+  }
+  // Speed: slide = fast then taper back to run; scoped sniper = slow (steady aim)
+  let speed;
+  if(sliding){
+    speed = RUN_SPEED + (SLIDE_SPEED - RUN_SPEED) * slideBoost;   // 14 -> 9
+  } else {
+    speed = scopeLevel > 0.5 ? 2.8 : (sprinting ? RUN_SPEED : WALK_SPEED);
+  }
+  // FOV: user setting is the base, slide widens most, sprint a little, scope overrides to zoom
+  const baseFov = settings.fov + (sliding ? 15 : (sprinting ? 10 : 0));
+  targetFOV = baseFov;
 
-  // Smoothly accelerate horizontal velocity toward target
-  const targetVx = _moveDir.x * speed;
-  const targetVz = _moveDir.z * speed;
-  const lerp = Math.min(1, dt*14);
+  // Slide locks its direction; otherwise follow movement input
+  const dX = sliding ? slideDir.x : _moveDir.x;
+  const dZ = sliding ? slideDir.z : _moveDir.z;
+
+  // Smoothly accelerate horizontal velocity toward target (slide snaps faster)
+  const targetVx = dX * speed;
+  const targetVz = dZ * speed;
+  const lerp = Math.min(1, dt * (sliding ? 20 : 14));
   player.velocity.x += (targetVx - player.velocity.x) * lerp;
   player.velocity.z += (targetVz - player.velocity.z) * lerp;
 
@@ -1640,6 +2765,7 @@ function update(dt){
   if(keys['Space'] && player.onGround){
     player.velocity.y = 13;
     player.onGround = false;
+    sliding = false; slideBoost = 0;   // jumping cancels a slide
   }
   player.velocity.y -= 22 * dt;
 
@@ -1670,13 +2796,15 @@ function update(dt){
   }
 
   // Ground + platform landing check (only when descending)
-  let groundY = 1.7;   // default: arena floor
+  // Slide crouches the camera (smooth eye-height lerp), recovers when slide ends
+  eyeHeight += ((sliding ? 1.0 : 1.7) - eyeHeight) * Math.min(1, dt*10);
+  let groundY = eyeHeight;   // default: arena floor
   if(player.velocity.y <= 0){
     for(let i=0; i<platforms.length; i++){
       const pl = platforms[i];
       if(camera.position.x >= pl.x1 && camera.position.x <= pl.x2 &&
          camera.position.z >= pl.z1 && camera.position.z <= pl.z2){
-        const standY = pl.top + 1.7;  // eye height = platform top + eye height
+        const standY = pl.top + eyeHeight;  // eye height = platform top + eye height
         // only land if we just crossed the surface (within 0.6m tolerance, going down)
         if(camera.position.y <= standY && camera.position.y > standY - 0.6){
           groundY = standY;
@@ -1700,17 +2828,53 @@ function update(dt){
   if(camera.position.z >  lim){ camera.position.z =  lim; player.velocity.z = 0; }
   if(camera.position.z < -lim){ camera.position.z = -lim; player.velocity.z = 0; }
 
-  // Weapon bob & recoil
+  // Weapon bob & recoil (applied to whichever view model is active)
   weaponRecoil = Math.max(0, weaponRecoil - dt*0.5);
   const moving = _moveDir.lengthSq() > 0 && player.onGround;
-  const bobAmt = moving ? (sprinting ? 0.025 : 0.014) : 0.005;
-  const bobSpeed = sprinting ? 12 : 8;
+  const bobAmt = sliding ? 0.008 : (moving ? (sprinting ? 0.025 : 0.014) : 0.005);
+  const bobSpeed = sliding ? 6 : (sprinting ? 12 : 8);
   const t = clock.elapsedTime;
   const bob = Math.sin(t * bobSpeed) * bobAmt;
-  gunGroup.position.x = 0.28 + (moving ? Math.sin(t*bobSpeed*0.5)*0.01 : 0);
-  gunGroup.position.y = gunBaseY + bob - weaponRecoil*0.5;
-  gunGroup.position.z = -0.6 + weaponRecoil;
-  gunGroup.rotation.x = weaponRecoil*1.5;
+  const wind = grenadeWindup > 0;
+  const scopedIn = scopeLevel > 0.6 && currentWeapon === 'sniper';   // only the sniper scope hides the gun
+  gunGroup.visible = !wind && !scopedIn && currentWeapon === 'rifle';
+  sniperGroup.visible = !wind && !scopedIn && currentWeapon === 'sniper';
+  grenadeHandGroup.visible = wind;
+  const activeGroup = currentWeapon === 'sniper' ? sniperGroup : gunGroup;
+  const gx = currentWeapon === 'sniper' ? 0.29 : 0.30;
+  const gz = currentWeapon === 'sniper' ? -0.83 : -0.78;
+  // Reload dip animation (own view-model): gun drops down/back, tilts, returns.
+  if(player.reloading && player.reloadT < 1){
+    player.reloadT = Math.min(1, player.reloadT + dt / WEAPONS[currentWeapon].reloadTime);
+  }
+  const reloadDip = player.reloading ? Math.sin(Math.PI * player.reloadT) : 0;
+  // Iron-sight ADS (rifle): lift the view model to screen centre so the model's
+  // front sight + rear notch line up with the target (three-point line).
+  const ironAiming = aiming && currentWeapon === 'rifle' && !wind && !gameOver;
+  adsAmount += ((ironAiming ? 1 : 0) - adsAmount) * Math.min(1, dt*10);
+  const ads = adsAmount;
+  if(!wind && !scopedIn){
+    // Hip-fire base pose, then interpolate toward the ADS centre pose
+    const hipX = gx + (moving ? Math.sin(t*bobSpeed*0.5)*0.01 : 0);
+    const hipY = gunBaseY + bob - weaponRecoil*0.5 - reloadDip*0.16;
+    const hipZ = gz + weaponRecoil + reloadDip*0.14;
+    const hipRotX = 0.10 + weaponRecoil*1.5 - reloadDip*0.55;
+    activeGroup.position.set(
+      hipX + (ADS_POS.x - hipX) * ads,
+      hipY + (ADS_POS.y - hipY) * ads,
+      hipZ + (ADS_POS.z - hipZ) * ads
+    );
+    activeGroup.rotation.x = hipRotX * (1 - ads);
+    activeGroup.rotation.y = 0.14 * (1 - ads);
+    activeGroup.rotation.z = -0.045 * (1 - ads);
+  }
+  // Grenade throwing arm: raises and dips forward over the 0.42s wind-up
+  if(wind){
+    const wphase = 1 - grenadeWindup/0.42;   // 0 -> 1
+    grenadeHandGroup.position.y = -0.22 + Math.sin(wphase*Math.PI)*0.2;
+    grenadeHandGroup.position.z = -0.45 - Math.sin(wphase*Math.PI)*0.15;
+    grenadeHandGroup.rotation.x = -wphase*1.1;
+  }
 
   // Camera shake - use position offset (smooth, sin-based) instead of random rotation
   // Position offset reads as "kick" not "flicker"; sin gives smooth motion vs random noise
@@ -1756,12 +2920,17 @@ function update(dt){
     updateHealthUI();
   }
 
-  // ===== SPRINT FOV TRANSITION (smooth) =====
-  // targetFOV is set by sprint logic in the movement section
-  if(Math.abs(camera.fov - targetFOV) > 0.1){
-    camera.fov += (targetFOV - camera.fov) * Math.min(1, dt*8);
+  // ===== FOV TRANSITION (sprint widen + sniper scope zoom, smooth) =====
+  // Only the sniper scope zooms (~22 FOV); rifle iron sight keeps the base FOV
+  const adsFov = currentWeapon === 'sniper' ? 22 : baseFov;
+  const desiredFov = THREE.MathUtils.lerp(baseFov, adsFov, scopeLevel);
+  if(Math.abs(camera.fov - desiredFov) > 0.05){
+    camera.fov += (desiredFov - camera.fov) * Math.min(1, dt*10);
     camera.updateProjectionMatrix();
   }
+
+  // ===== GRENADES (wind-up, physics, resupply, explosions) =====
+  updateGrenades(dt);
 
   // ===== UPDATE TELEGRAPHS (spawn warning pillars) =====
   for(let i=telegraphs.length-1; i>=0; i--){
@@ -1818,13 +2987,15 @@ function update(dt){
     }
   }
 
-  // Update bullets
+  // Update bullets (tracers + sniper beams)
   for(let i=bullets.length-1; i>=0; i--){
     const b = bullets[i];
     b.userData.life -= dt;
-    b.material.opacity = Math.max(0, b.userData.life / b.userData.maxLife);
+    b.material.opacity = Math.max(0, b.userData.life / b.userData.maxLife) * (b.userData.isBeam ? 0.85 : 0.9);
     if(b.userData.life <= 0){
       scene.remove(b);
+      b.geometry.dispose();
+      b.material.dispose();
       bullets.splice(i,1);
     }
   }
@@ -1838,10 +3009,19 @@ function update(dt){
       ud.scale += dt*8;
       p.scale.setScalar(ud.scale);
       p.material.opacity = Math.max(0, ud.life/ud.maxLife);
+    } else if(ud.isFlash){
+      // Explosion core: quick expansion + fade
+      const k = 1 - ud.life/ud.maxLife;
+      p.scale.setScalar(0.7 + k*4.5);
+      p.material.opacity = 0.95 * Math.max(0, ud.life/ud.maxLife);
     } else {
       if(ud.gravity) ud.velocity.y -= 14 * dt;
       p.position.addScaledVector(ud.velocity, dt);
       p.material.opacity = Math.max(0, ud.life/ud.maxLife);
+      if(ud.smoke){
+        p.scale.addScalar(dt*2.2);   // smoke grows as it rises
+        p.rotation.y += dt;
+      }
       if(ud.rotSpeed){
         p.rotation.x += ud.rotSpeed.x*dt;
         p.rotation.y += ud.rotSpeed.y*dt;
@@ -1874,12 +3054,13 @@ function animate(){
   if(fpsTime >= 0.5){
     fps = Math.round(fpsCount / fpsTime);
     $('fpsCounter').textContent = 'FPS ' + fps;
+    autoResolutionTick(fps);   // adapt render resolution while in AUTO mode
     fpsCount = 0;
     fpsTime = 0;
   }
 }
 
-init();
+init().catch(e => console.error('init failed', e));
 </script>
 
 </body>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEON STRIKE · 联机入口</title>
+<style>
+  :root{ --neon-cyan:#00f0ff; --neon-yellow:#ffe600; --neon-red:#ff3a3a; --neon-blue:#3a7aff; --bg:#0b0c0f; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background: radial-gradient(1200px 700px at 50% -10%, #101c2e 0%, #0b0c0f 60%);
+    color:#dff3ff; font-family:'Segoe UI', system-ui, sans-serif;
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+  }
+  .portal{ width:min(460px, 92vw); padding:34px 30px; border:1px solid rgba(0,240,255,0.35);
+    background:rgba(8,12,20,0.75); box-shadow:0 0 40px rgba(0,240,255,0.18), inset 0 0 60px rgba(0,240,255,0.04); }
+  h1{ font-family:'Orbitron','Segoe UI',sans-serif; font-size:40px; letter-spacing:4px; text-align:center;
+    color:var(--neon-cyan); text-shadow:0 0 18px var(--neon-cyan); }
+  .sub{ text-align:center; color:#6a8db0; font-size:12px; letter-spacing:3px; margin:6px 0 26px; }
+  label{ display:block; font-size:11px; color:#9fd8ff; letter-spacing:2px; margin:16px 0 6px; }
+  input{ width:100%; padding:12px 14px; font-size:15px; background:rgba(0,240,255,0.06);
+    border:1px solid rgba(0,240,255,0.35); color:#fff; border-radius:3px; outline:none;
+    font-family:'Consolas','Segoe UI',monospace; }
+  input:focus{ border-color:var(--neon-cyan); box-shadow:0 0 12px rgba(0,240,255,0.35); }
+  .hint{ font-size:11px; color:#6a8db0; margin-top:6px; line-height:1.6; }
+  .row{ display:flex; gap:10px; }
+  .row > div{ flex:1; }
+  button{ width:100%; margin-top:26px; padding:15px; font-size:15px; letter-spacing:3px; font-weight:700;
+    cursor:pointer; border-radius:3px; border:1px solid var(--neon-cyan); color:#000;
+    background:var(--neon-cyan); font-family:'Orbitron','Segoe UI',sans-serif; transition:all 0.2s; }
+  button:hover{ box-shadow:0 0 20px var(--neon-yellow); border-color:var(--neon-yellow); }
+  .foot{ text-align:center; color:#4a6488; font-size:11px; margin-top:18px; line-height:1.7; }
+  .err{ color:var(--neon-red); font-size:12px; margin-top:8px; min-height:16px; }
+  .badge{ color:var(--neon-yellow); }
+</style>
+</head>
+<body>
+  <div class="portal">
+    <h1>NEON STRIKE</h1>
+    <div class="sub">霓虹突袭 · 局域网联机入口</div>
+
+    <label>服务器地址（主机 IP）</label>
+    <input id="srv" placeholder="例：192.168.1.100" autocomplete="off">
+    <div class="hint" id="srvHint">正在自动检测本机地址…</div>
+
+    <div class="row">
+      <div>
+        <label>房间代码（可选）</label>
+        <input id="room" maxlength="5" placeholder="留空=建房" autocomplete="off">
+      </div>
+      <div>
+        <label>你的名字</label>
+        <input id="name" maxlength="14" placeholder="Player" autocomplete="off">
+      </div>
+    </div>
+
+    <button id="go">进入联机 / CONNECT</button>
+    <div class="err" id="err"></div>
+    <div class="foot">
+      地址框已自动填好<strong class="badge">本机</strong>地址。<br>
+      <strong>联机时把它改成主机的 IP</strong>，输入房间代码即可加入。<br>
+      留空房间代码 = 创建新房间（你是主机）。
+    </div>
+  </div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  // Auto-detect this computer's LAN address (server filters virtual adapters).
+  fetch('/api/host')
+    .then(r=>r.json())
+    .then(d=>{ $('srv').value = d.host + ':' + (d.port||8080); $('srvHint').textContent = '已自动填好本机地址，联机时改成主机的 IP'; })
+    .catch(()=>{ $('srv').value = location.host; $('srvHint').textContent = '自动检测失败，请手动填写主机 IP'; });
+
+  $('go').addEventListener('click', ()=>{
+    let host = $('srv').value.trim();
+    $('err').textContent = '';
+    if(!host){
+      $('err').textContent = '请先填写服务器地址（主机 IP）';
+      return;
+    }
+    // Normalize: strip protocol, default to ws + port 8080
+    host = host.replace(/^(wss?:)?\/\//,'');
+    if(!/:\d+$/.test(host)) host += ':8080';
+    const room = $('room').value.trim().toUpperCase();
+    const name = $('name').value.trim();
+    const q = new URLSearchParams();
+    q.set('server', 'ws://' + host);
+    if(room) q.set('room', room);
+    if(name) q.set('name', name);
+    location.href = '/multiplayer.html?' + q.toString();
+  });
+  // Enter key = connect
+  document.addEventListener('keydown', e=>{ if(e.key === 'Enter') $('go').click(); });
+</script>
+</body>
+</html>
